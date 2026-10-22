@@ -44,22 +44,26 @@
 
           <div class="section-card">
             <h2>1. Design decisions</h2>
-            <table>
+            <div class="table-wrap">
+              <table>
               <tr><th>Decision</th><th>Rationale</th><th>Security effect</th></tr>
               <tr><td>Single JSON body ceiling (<code>MAX_REQUEST_BODY_BYTES</code> = 1 MiB) on <code>/path</code></td><td>The handler reads <code>self.rfile.read(length)</code> using the client-supplied <code>Content-Length</code> with no upper bound; a malicious or erroneous client could allocate a multi-gigabyte buffer and exhaust server memory (single process, ThreadingHTTPServer).</td><td>Caps per-request memory; returns HTTP 413 for oversized bodies.</td></tr>
               <tr><td>Reject negative and non-numeric <code>Content-Length</code></td><td>Defensive handling of malformed headers before any allocation.</td><td>Avoids undefined behaviour and 500 errors on bad input.</td></tr>
               <tr><td>Existing per-field validation retained</td><td><code>max_transfers</code> (&ge;0), <code>option_count</code> (&ge;1), <code>departure_time</code> parsing, <code>algorithm</code> whitelist are already validated (<code>http_server.py</code>).</td><td>Reduces malformed-query attack surface.</td></tr>
-            </table>
+              </table>
+            </div>
           </div>
           <div class="section-card">
             <h2>2. Alternative mitigation strategies considered</h2>
-            <table>
+            <div class="table-wrap">
+              <table>
               <tr><th>Alternative</th><th>Pros</th><th>Cons</th><th>Decision</th></tr>
               <tr><td>No change (rely on existing field validation)</td><td>Zero compatibility risk</td><td>Body size unbounded; memory-exhaustion vector remains</td><td>Rejected</td></tr>
               <tr><td>Reverse proxy / WAF request-size limit (e.g., nginx <code>client_max_body_size</code>)</td><td>Offloads concern; operates before the app</td><td>Adds infrastructure; not part of the repo; doesn't protect direct gRPC access</td><td>Recommended for deployment</td></tr>
               <tr><td>Application-level body ceiling (implemented)</td><td>Self-contained, testable, travels with the code; covers direct HTTP access</td><td>Only covers the Python HTTP server, not gRPC or a future reverse proxy</td><td>Implemented</td></tr>
               <tr><td>Per-IP rate limiting + concurrency caps</td><td>Addresses burst/DoS beyond a single large body</td><td>Requires state store; broader scope than the targeted fix</td><td>Deferred (future work)</td></tr>
-            </table>
+              </table>
+            </div>
           </div>
 
           <div class="section-card">

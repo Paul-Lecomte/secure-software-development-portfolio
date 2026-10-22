@@ -44,7 +44,8 @@
 
           <div class="section-card">
             <h2>1. Audit metadata</h2>
-            <table>
+            <div class="table-wrap">
+              <table>
               <tr><th>Item</th><th>Value</th></tr>
               <tr><td>Audit date</td><td>21 October 2026</td></tr>
               <tr><td>Auditor</td><td>Paul Lecomte (MSc Computer Science, University of Essex Online)</td></tr>
@@ -53,7 +54,8 @@
               <tr><td>Supporting system</td><td><code>swiss-pb-map</code> &mdash; SwissTransitMap full-stack application</td></tr>
               <tr><td>Commit (frontend)</td><td><code>610e4342f747d03b68c11bc281b7830abda047ac</code> (origin/main, 13 February 2026)</td></tr>
               <tr><td>Access method</td><td>Public GitHub repositories cloned to a local audit working directory</td></tr>
-            </table>
+              </table>
+            </div>
           </div>
           <div class="section-card">
             <h2>2. System scope and architecture</h2>
@@ -70,7 +72,8 @@
 
           <div class="section-card">
             <h2>3. Important assets</h2>
-            <table>
+            <div class="table-wrap">
+              <table>
               <tr><th>Asset</th><th>Why it matters</th><th>System</th></tr>
               <tr><td>Transit network graph &amp; timetables (Neo4j / pickle cache)</td><td>Core routing data; integrity affects route correctness</td><td>Backend</td></tr>
               <tr><td>Neo4j credentials (<code>NEO4J_URI/USER/PASSWORD</code>)</td><td>Default credentials <code>neo4j/neo4j</code> if env unset (<code>src/config.py:31-34</code>)</td><td>Backend</td></tr>
@@ -78,7 +81,8 @@
               <tr><td>bcrypt password hashes (SwissTransitMap)</td><td>Credential store</td><td>SwissTransitMap</td></tr>
               <tr><td>HTTP/gRPC service availability</td><td>Routing queries depend on the service being reachable</td><td>Backend</td></tr>
               <tr><td>GTFS source data &amp; processed MongoDB collections</td><td>Feed integrity underpins map and search results</td><td>SwissTransitMap</td></tr>
-            </table>
+              </table>
+            </div>
           </div>
 
           <div class="section-card">
@@ -96,7 +100,8 @@
 
           <div class="section-card">
             <h2>5. Attack-surface analysis</h2>
-            <table>
+            <div class="table-wrap">
+              <table>
               <tr><th>Surface</th><th>Entry points</th><th>Exposure</th></tr>
               <tr><td>HTTP <code>/path</code> body parsing</td><td><code>Content-Length</code>-driven <code>self.rfile.read(length)</code> (<code>http_server.py:3283</code>)</td><td>Network (unauthenticated)</td></tr>
               <tr><td>HTTP query parameters</td><td><code>start_stop_id</code>, <code>end_stop_id</code>, <code>origin</code>, <code>destination</code>, <code>departure_time</code>, <code>max_transfers</code>, <code>option_count</code></td><td>Network</td></tr>
@@ -105,7 +110,8 @@
               <tr><td>Pickle cache load</td><td><code>pickle.load</code> / <code>np.load(allow_pickle=True)</code></td><td>Local file</td></tr>
               <tr><td>OSRM outbound call</td><td><code>urllib</code> request to external walking router</td><td>Outbound network</td></tr>
               <tr><td>SwissTransitMap Express API</td><td>REST endpoints, JWT cookies, CORS</td><td>Network</td></tr>
-            </table>
+              </table>
+            </div>
           </div>
 
         </div>

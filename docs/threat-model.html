@@ -66,7 +66,8 @@
 
           <div class="section-card">
             <h2>3. STRIDE threat model</h2>
-            <table>
+            <div class="table-wrap">
+              <table>
               <tr><th>STRIDE</th><th>Threat</th><th>Target / reference</th><th>Classification</th></tr>
               <tr><td>Spoofing</td><td>Caller impersonates another client; no auth on HTTP/gRPC bindings</td><td><code>http_server.py</code>, <code>server.py</code></td><td>Configuration-dependent</td></tr>
               <tr><td>Tampering</td><td>Altered request fields (<code>departure_time</code>, <code>max_transfers</code>, <code>option_count</code>) cause excessive computation</td><td><code>http_server.py:3111-3140</code></td><td>Potential &mdash; verify</td></tr>
@@ -74,7 +75,8 @@
               <tr><td>Information disclosure</td><td>Insecure gRPC port exposes traffic to network eavesdropping</td><td><code>server.py:305</code></td><td>Configuration-dependent</td></tr>
               <tr><td>Denial of service</td><td>Unbounded request body / <code>Content-Length</code> exhausts memory; unbounded <code>option_count</code>, <code>max_transfers</code> drive expensive RAPTOR runs</td><td><code>http_server.py:3283</code>, <code>http_server.py:3116-3140</code>, <code>server.py</code></td><td>Confirmed pattern &mdash; mitigated (see implementation)</td></tr>
               <tr><td>Elevation of privilege</td><td>Hardcoded default Neo4j credentials if env unset; no authz between query roles</td><td><code>config.py:31-34</code></td><td>Configuration-dependent</td></tr>
-            </table>
+              </table>
+            </div>
           </div>
 
           <div class="callout callout-info">

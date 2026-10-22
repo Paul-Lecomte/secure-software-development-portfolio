@@ -33,7 +33,12 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
   --max-width: 1100px;
   --header-height: 72px;
+  /* Width of the navigation panel itself. Kept constant so the off-canvas
+     panel keeps its real size when it is slid off-screen on small viewports. */
   --nav-width: 260px;
+  /* Horizontal space reserved for the navigation panel beside the content.
+     Collapses to 0 when the navigation becomes an off-canvas overlay. */
+  --content-offset: 260px;
   --transition: 160ms ease;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -43,6 +48,9 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; line-height: 1.5; }
 body { font-family: var(--font-sans); font-size: 16px; color: var(--color-body); background: var(--color-bg); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+/* Long unbreakable tokens (commit SHAs, file paths, URLs) must be able to break
+   anywhere, otherwise their min-content width pushes the page sideways. */
+code { overflow-wrap: anywhere; word-break: break-word; }
 h1, h2, h3, h4, h5, h6 { color: var(--color-ink); font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; }
 h1 { font-size: 2.125rem; margin-bottom: 0.75rem; }
 h2 { font-size: 1.5rem; margin: 2rem 0 0.75rem; }
@@ -67,7 +75,7 @@ strong { color: var(--color-ink); }
 .nav-list a { display: block; padding: 0.5rem 0.75rem; margin: -0.5rem -0.75rem; border-radius: var(--radius-sm); color: var(--color-body); text-decoration: none; font-size: 0.875rem; transition: background var(--transition), color var(--transition); }
 .nav-list a:hover, .nav-list a:focus { background: var(--color-bg-soft); color: var(--color-ink); }
 .nav-list a.active { background: var(--color-blue-light); color: var(--color-blue-dark); border-left: 3px solid var(--color-blue); }
-.main { flex: 1; margin-left: var(--nav-width); padding: 0; width: calc(100% - var(--nav-width)); }
+.main { flex: 1; margin-left: var(--content-offset); padding: 0; width: calc(100% - var(--content-offset)); }
 .site-header { position: sticky; top: 0; height: var(--header-height); border-bottom: 1px solid var(--color-border); background: rgba(255,255,255,0.92); backdrop-filter: blur(6px); z-index: 110; display: flex; align-items: center; }
 .site-header .wrap { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 .site-header h1 { font-size: 1rem; margin: 0; color: var(--color-ink); }
@@ -78,7 +86,9 @@ strong { color: var(--color-ink); }
 .content { padding: 2rem 1.5rem 4rem; }
 .content > h2:first-child { margin-top: 0; }
 .section-card { border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1.5rem; margin: 1.5rem 0; background: var(--color-bg); }
-.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+/* min() lets the track shrink below 260px when the viewport is narrower,
+   otherwise the grid would force the page to scroll sideways. */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 1rem; margin: 1.5rem 0; }
 .card { border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1.25rem; background: var(--color-bg); transition: box-shadow var(--transition); }
 .card:hover { box-shadow: var(--shadow-md); }
 .card h4 { margin-top: 0; margin-bottom: 0.5rem; font-size: 1rem; }
@@ -91,10 +101,24 @@ strong { color: var(--color-ink); }
 .figure { margin: 2rem 0; text-align: center; }
 .figure img { max-width: 100%; height: auto; border: 1px solid var(--color-border); border-radius: var(--radius); }
 .figcap { margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-body); }
+/* Code blocks scroll inside their own box instead of widening the page. */
+pre { overflow-x: auto; max-width: 100%; padding: 0.75rem 1rem; background: var(--color-bg-soft); border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.82rem; line-height: 1.5; }
+pre code { font-family: var(--font-mono); white-space: pre; }
 .callout { border-radius: var(--radius); padding: 1rem 1.25rem; margin: 1.5rem 0; border: 1px solid transparent; }
 .callout-info  { background: var(--color-blue-light); border-color: var(--color-border); color: var(--color-ink); }
 .callout-warn  { background: var(--color-amber-bg); border-color: #fcd34d; color: var(--color-ink); }
 .callout-red   { background: var(--color-red-bg); border-color: #fca5a5; color: var(--color-ink); }
+/* Data tables. The wrapper scrolls horizontally so wide tables never widen the
+   page. The table keeps a sensible minimum width so columns stay readable and
+   the wrapper scrolls, rather than squeezing the content into unreadable
+   single-character columns. */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; max-width: 100%; }
+.table-wrap > table { border-collapse: collapse; width: 100%; min-width: 34rem; }
+.table-wrap th, .table-wrap td { border: 1px solid var(--color-border); padding: 0.5rem 0.75rem; font-size: 0.85rem; text-align: left; vertical-align: top; }
+.table-wrap th { background: var(--color-bg-soft); color: var(--color-ink); font-weight: 600; }
+.table-wrap tbody tr:nth-child(even) { background: var(--color-bg-soft); }
+.table-wrap code { font-family: var(--font-mono); font-size: 0.85em; overflow-wrap: anywhere; }
+/* Matrix tables centre their cells; declared after the generic rules so it wins. */
 .matrix-table td, .matrix-table th { font-size: 0.85rem; padding: 0.5rem 0.75rem; text-align: center; }
 .matrix-table th:first-child, .matrix-table td:first-child { text-align: left; }
 .site-footer { border-top: 1px solid var(--color-border); padding: 2rem 1.5rem 3rem; color: var(--color-body); font-size: 0.85rem; }
@@ -108,7 +132,7 @@ strong { color: var(--color-ink); }
 .skip-link { position: absolute; left: -9999px; top: 0; z-index: 200; padding: 0.75rem 1rem; background: var(--color-ink); color: #ffffff; border-radius: 0 0 var(--radius-sm) 0; }
 .skip-link:focus { left: 0; }
 @media (max-width: 900px) {
-  :root { --nav-width: 0; }
+  :root { --content-offset: 0; }
   .nav-wrap { transform: translateX(-100%); }
   .main { width: 100%; margin-left: 0; }
   .nav-wrap.open { transform: translateX(0); }

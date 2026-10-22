@@ -44,18 +44,21 @@
 
           <div class="section-card">
             <h2>1. Test baseline (before the change)</h2>
-            <table>
+            <div class="table-wrap">
+              <table>
               <tr><th>Item</th><th>Value</th></tr>
               <tr><td>Repository</td><td><code>fastest_path_backend</code>, commit <code>90a5076</code></td></tr>
               <tr><td>Test command</td><td><code>python -m pytest tests/test_smoke.py -q</code></td></tr>
               <tr><td>Environment</td><td>Python 3.12.10 (win32), Windows; pytest 9.1.1; grpcio 1.78.0, grpcio-tools 1.78.0, neo4j 6.1.0, numba 0.64.0, numpy 2.4.3, pandas 3.0.1, protobuf 6.33.6, python-dotenv 1.2.2</td></tr>
               <tr><td>Baseline result</td><td><span class="status status-ok">26 passed</span> in 2.84s</td></tr>
-            </table>
+              </table>
+            </div>
           </div>
           <div class="section-card">
             <h2>2. Regression tests added (after the change)</h2>
             <p>New file: <code>tests/test_request_limits.py</code> (6 tests). The tests exercise <code>PathRequestHandler._read_json()</code> directly using a fake <code>rfile</code>/<code>headers</code> so no network server is required.</p>
-            <table>
+            <div class="table-wrap">
+              <table>
               <tr><th>Test</th><th>What it verifies</th><th>Expected</th></tr>
               <tr><td><code>test_normal_payload_accepted</code></td><td>A well-formed <code>/path</code> body is not rejected for size</td><td>Not 413</td></tr>
               <tr><td><code>test_missing_content_length_rejected</code></td><td>Missing <code>Content-Length</code> &rarr; 400</td><td>400 <code>missing_content_length</code></td></tr>
@@ -63,28 +66,33 @@
               <tr><td><code>test_body_at_limit_accepted</code></td><td>Body exactly at the limit is accepted</td><td>Not 413</td></tr>
               <tr><td><code>test_negative_content_length_rejected</code></td><td>Negative <code>Content-Length</code> &rarr; 400</td><td>400 <code>invalid_content_length</code></td></tr>
               <tr><td><code>test_invalid_content_length_rejected</code></td><td>Non-numeric <code>Content-Length</code> &rarr; 400</td><td>400 <code>invalid_content_length</code></td></tr>
-            </table>
+              </table>
+            </div>
           </div>
 
           <div class="section-card">
             <h2>3. Actual results (after the change)</h2>
-            <table>
+            <div class="table-wrap">
+              <table>
               <tr><th>Command</th><th>Result</th></tr>
               <tr><td><code>python -m pytest tests/test_smoke.py tests/test_request_limits.py -q</code></td><td><span class="status status-ok">32 passed</span> in 2.79s (26 smoke + 6 request-limit)</td></tr>
-            </table>
+              </table>
+            </div>
             <p>All 32 tests passed. The baseline smoke tests continue to pass, confirming no regression, and the new request-limit tests confirm the 413 behaviour.</p>
           </div>
 
           <div class="section-card">
             <h2>4. Before-and-after comparison</h2>
-            <table>
+            <div class="table-wrap">
+              <table>
               <tr><th>Behaviour</th><th>Before</th><th>After</th></tr>
               <tr><td>Oversized <code>Content-Length</code> body</td><td>Attempted <code>self.rfile.read(length)</code> &mdash; potential memory exhaustion / DoS</td><td>HTTP 413 <code>request_entity_too_large</code> before any allocation</td></tr>
               <tr><td>Negative <code>Content-Length</code></td><td>Passed to <code>read()</code> (undefined/undesirable)</td><td>HTTP 400 <code>invalid_content_length</code></td></tr>
               <tr><td>Non-numeric <code>Content-Length</code></td><td>HTTP 400 <code>invalid_content_length</code> (already handled)</td><td>Unchanged (HTTP 400)</td></tr>
               <tr><td>Normal request</td><td>Processed normally</td><td>Processed normally (no change)</td></tr>
               <tr><td>Test suite</td><td>26 passed</td><td>32 passed (no regression)</td></tr>
-            </table>
+              </table>
+            </div>
           </div>
 
           <div class="section-card">

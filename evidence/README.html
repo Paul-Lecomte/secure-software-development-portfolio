@@ -47,13 +47,15 @@
 
           <div class="section-card">
             <h2>2. Evidence files</h2>
-            <table>
+            <div class="table-wrap">
+              <table>
               <tr><th>File</th><th>Description</th></tr>
               <tr><td><code>tests/test_smoke.py</code> (backend)</td><td>Existing algorithm smoke tests; unchanged by the fix.</td></tr>
               <tr><td><code>tests/test_request_limits.py</code> (backend, added)</td><td>Regression tests for the 1 MiB request-body ceiling.</td></tr>
               <tr><td><code>src/http_server.py</code> (backend, modified)</td><td>Added <code>MAX_REQUEST_BODY_BYTES</code> and the 413 guard.</td></tr>
               <tr><td><code>docs/security-testing.html</code></td><td>Full test baseline, results and before/after comparison.</td></tr>
-            </table>
+              </table>
+            </div>
           </div>
 
           <div class="callout callout-info">
