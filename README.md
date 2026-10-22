@@ -14,7 +14,7 @@ secure-software-development-portfolio/
 ├── assets/
 │   ├── styles/main.css                     # Editorial stylesheet
 │   ├── scripts/main.js                     # Navigation behaviour
-│   └── images/favicon.svg                  # Favicon
+│   └── diagrams/favicon.svg                 # Favicon
 ├── docs/                                   # Assessed artefacts
 │   ├── learning-outcomes.html              # LO1–LO4 evidence mapping
 │   ├── system-overview.html                # Scope, architecture, assets, trust boundaries, attack surface
@@ -34,12 +34,25 @@ secure-software-development-portfolio/
 │   ├── peer-and-tutor-feedback.html        # Feedback template
 │   ├── professional-skills-matrix.html     # Skills matrix
 │   └── personal-development-plan.html      # PDP
-└── evidence/                               # Reproducible evidence
-    ├── README.html                         # Evidence index
-    └── test-results/
-        ├── index.html                      # Test results page
-        ├── results.md                      # Results summary
-        └── pytest-results.txt              # Raw pytest output (UTF-8)
+├── evidence/                               # Reproducible evidence
+│   ├── README.html                         # Evidence index
+│   └── test-results/
+│       ├── index.html                      # Test results page
+│       ├── results.md                      # Results summary
+│       └── pytest-results.txt              # Raw pytest output (UTF-8)
+├── tools/                                  # Validation & deployment tooling (not published)
+│   ├── validate_links.py                   # Internal link / HTML structure validator
+│   ├── verify_references.py                # Resolves source references at pinned commits
+│   ├── check_served.py                     # Asserts every published path serves HTTP 200
+│   ├── build_site.py                       # Stages the publish set (allow-list)
+│   ├── site_files.py                       # Shared file-discovery helper
+│   ├── check_urls.py                       # External URL reachability check
+│   ├── capture_test_results.py             # Regenerates pytest output as UTF-8
+│   ├── list_references.py                  # Prints all source references (audit aid)
+│   └── fix_encoding.py                     # Repairs mojibake in HTML
+└── .github/workflows/                      # CI + Pages deployment (not published)
+    ├── validate.yml                        # Link / reference / served-path CI
+    └── deploy-pages.yml                    # GitHub Actions Pages deployment
 ```
 
 ## Validation tooling
@@ -50,7 +63,8 @@ The portfolio ships with dependency-free Python scripts that re-verify its own c
 |---|---|---|
 | `tools/validate_links.py` | Checks every HTML file for broken internal links, dead `#anchors`, missing `<title>`/`<meta charset>`/viewport/`lang`, unbalanced tags, and images without `alt`. | 0 = clean |
 | `tools/verify_references.py` | Resolves every `file:line` reference in `docs/` against the pinned commit SHAs and asserts the cited line really contains the described construct. | 0 = clean |
-| `tools/check_served.py` | Serves the site locally and asserts all 28 published paths return HTTP 200 with complete HTML. | 0 = clean |
+| `tools/check_served.py` | Serves the site locally and asserts all 29 published paths return HTTP 200 with complete HTML. | 0 = clean |
+| `tools/build_site.py` | Stages the exact publish set into `_site/` and asserts it matches the 29 served paths. | 0 = clean |
 | `tools/capture_test_results.py` | Re-runs the backend test suite and regenerates `evidence/test-results/pytest-results.txt` as UTF-8. | 0 = tests passed |
 | `tools/list_references.py` | Prints every source reference found in the docs (audit aid). | 0 = always |
 
@@ -60,9 +74,10 @@ Run them from the repository root:
 python tools/validate_links.py
 python tools/verify_references.py
 python tools/check_served.py
+python tools/build_site.py
 ```
 
-Latest results: **19/19 HTML files and 323 internal links valid; 26/26 source references resolve at the pinned commits; 28/28 paths served with HTTP 200; 32/32 backend tests pass.**
+Latest results: **19/19 HTML files and 323 internal links valid; 26/26 source references resolve at the pinned commits; 29/29 paths served with HTTP 200; 32/32 backend tests pass.**
 
 ## What was audited
 
@@ -101,9 +116,15 @@ Or simply open `index.html` directly in a browser.
 
 This site is designed for GitHub Pages as a **project site** (published under a subpath, e.g. `https://Paul-Lecomte.github.io/secure-software-development-portfolio/`).
 
-1. Push this folder to a GitHub repository named `secure-software-development-portfolio`.
-2. In the repository settings, go to **Pages** and set the source to the `main` branch, root folder `/`.
-3. The site will be available at `https://Paul-Lecomte.github.io/secure-software-development-portfolio/`.
+Deployment is automated by `.github/workflows/deploy-pages.yml` (the **GitHub Actions** build type, `build_type: workflow`):
+
+1. Push this folder to the GitHub repository `secure-software-development-portfolio`.
+2. The `Deploy to GitHub Pages` workflow runs on every push to `main`. It stages the publish set with `python tools/build_site.py _site`, then uploads and deploys it.
+3. The site is published at `https://Paul-Lecomte.github.io/secure-software-development-portfolio/`.
+
+To enable it in the repository settings, go to **Pages** and set the source to **GitHub Actions**.
+
+`tools/build_site.py` stages an explicit allow-list of files, so only the site is published — the build tooling (`tools/*.py`), the workflow definitions (`.github/`) and repository metadata (`.gitattributes`, `.gitignore`, `_config.yml`) are **not** published. The allow-list is cross-checked against the served-path contract in `tools/check_served.py`, so the two cannot drift apart.
 
 All internal links are relative, so they work both at the domain root and under the GitHub Pages project-site path.
 

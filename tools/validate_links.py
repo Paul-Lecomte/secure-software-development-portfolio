@@ -19,6 +19,8 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
+from site_files import site_files
+
 ROOT = Path(__file__).resolve().parent.parent
 
 VOID_TAGS = {
@@ -161,7 +163,7 @@ def validate_file(doc: Path) -> None:
 
 def main() -> int:
     global checked_files
-    html_files = sorted(ROOT.rglob("*.html"))
+    html_files = site_files("*.html")
     if not html_files:
         print("No HTML files found.")
         return 1

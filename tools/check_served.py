@@ -45,6 +45,7 @@ EXPECTED = [
     "/robots.txt",
     "/README.md",
     "/LICENSE",
+    "/.nojekyll",
 ]
 
 

@@ -14,3 +14,6 @@ Thumbs.db
 # Local scratch
 *.log
 *.tmp
+
+# Local Pages staging output (tools/build_site.py)
+_site/

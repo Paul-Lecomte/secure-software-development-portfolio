@@ -14,6 +14,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from site_files import site_files
+
 ROOT = Path(__file__).resolve().parent.parent
 
 BACKEND = Path(r"C:\Users\lecom\audit-work\backend")
@@ -106,7 +108,7 @@ def main() -> int:
     checked = 0
     seen: set[tuple[str, int, int]] = set()
 
-    for doc in sorted(ROOT.rglob("*.html")):
+    for doc in site_files("*.html"):
         text = doc.read_text(encoding="utf-8", errors="replace")
         rel = doc.relative_to(ROOT).as_posix()
         for m in REF_RE.finditer(text):

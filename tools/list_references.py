@@ -8,6 +8,8 @@ import re
 import sys
 from pathlib import Path
 
+from site_files import site_files
+
 ROOT = Path(__file__).resolve().parent.parent
 
 # e.g. <code>src/config.py:31-34</code> or loader.py:598
@@ -18,7 +20,7 @@ REF_RE = re.compile(
 
 def main() -> int:
     found = False
-    for doc in sorted(ROOT.rglob("*.html")):
+    for doc in site_files("*.html"):
         text = doc.read_text(encoding="utf-8", errors="replace")
         for m in REF_RE.finditer(text):
             found = True

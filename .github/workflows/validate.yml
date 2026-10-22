@@ -29,3 +29,6 @@ jobs:
 
       - name: Verify all served paths return HTTP 200
         run: python tools/check_served.py
+
+      - name: Verify the publish set matches the served paths
+        run: python tools/build_site.py _site

@@ -11,6 +11,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from site_files import site_files
+
 ROOT = Path(__file__).resolve().parent.parent
 
 URL_RE = re.compile(r"https?://[^\s<>\"'\)]+")
@@ -53,7 +55,7 @@ def fetch(url: str, timeout: int = 30) -> tuple[int, str]:
 
 def main() -> int:
     urls: set[str] = set()
-    for path in (*ROOT.rglob("*.html"), *ROOT.rglob("*.md")):
+    for path in site_files("*.html", "*.md"):
         text = path.read_text(encoding="utf-8", errors="replace")
         for m in URL_RE.finditer(text):
             url = clean(m.group(0))
