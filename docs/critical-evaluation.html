@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Critical evaluation &mdash; Secure Software Development e-Portfolio</title>
+  <meta name="description" content="Critical evaluation of the implemented security fix, limitations, trade-offs and uncertainties.">
+  <link rel="stylesheet" href="../assets/styles/main.css">
+  <link rel="icon" href="../assets/diagrams/favicon.svg">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
+    <aside class="nav-wrap" id="navWrap">
+      <div class="nav-inner">
+        <a href="../index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>
+        <div class="nav-section-title">Assessment</div>
+        <ul class="nav-list">
+          <li><a href="../index.html">Home &amp; audit summary</a></li>
+          <li><a href="learning-outcomes.html">Learning outcomes</a></li>
+          <li><a href="system-overview.html">System overview</a></li>
+          <li><a href="threat-model.html">Threat model</a></li>
+          <li><a href="risk-assessment.html">Risk register</a></li>
+          <li><a href="secure-design.html">Secure design</a></li>
+          <li><a href="implementation.html">Implementation</a></li>
+          <li><a href="security-testing.html">Security testing</a></li>
+          <li><a href="critical-evaluation.html" class="active">Critical evaluation</a></li>
+          <li><a href="references.html">References</a></li>
+        </ul>
+        <div class="nav-section-title">Evidence</div>
+        <ul class="nav-list">
+          <li><a href="../evidence/README.html">Evidence index</a></li>
+        </ul>
+      </div>
+    </aside>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navWrap">&#9776;</button>
+    <main class="main" id="main" tabindex="-1">
+      <header class="site-header">
+        <div class="wrap"><h1>Critical evaluation</h1><div class="meta">Strengths, limitations, trade-offs and uncertainties of the fix</div></div>
+      </header>
+      <section class="content">
+        <div class="wrap">
+          <p>This page critically evaluates the implemented security improvement against the goals of the audit, discussing what it does and does not achieve, the trade-offs made, and remaining uncertainties.</p>
+
+          <div class="section-card">
+            <h2>1. What the fix achieves</h2>
+            <ul>
+              <li>Bounds per-request memory on the HTTP <code>/path</code> endpoint to 1 MiB, removing the unbounded-<code>Content-Length</code> memory-exhaustion path.</li>
+              <li>Returns a clear, semantic HTTP 413 (with <code>limit_bytes</code>) instead of letting the server attempt a runaway allocation.</li>
+              <li>Adds regression and boundary tests (normal, oversized, at-limit, negative, invalid, missing <code>Content-Length</code>) with actual results: 32/32 passing, no smoke-test regression.</li>
+            </ul>
+          </div>
+
+          <div class="section-card">
+            <h2>2. Limitations</h2>
+            <ul>
+              <li>Covers the Python HTTP server only; the gRPC binding (<code>add_insecure_port</code>, <code>server.py:305</code>) is unchanged.</li>
+              <li>No rate limiting or concurrency caps; a burst of many small valid requests could still exhaust CPU/memory.</li>
+              <li>Does not address hardcoded default Neo4j credentials (<code>config.py:31-34</code>), pickle deserialization (<code>loader.py</code>), or lack of TLS/auth.</li>
+              <li>Validated against a local mock network, not a deployed production instance.</li>
+            </ul>
+          </div>
+
+          <div class="section-card">
+            <h2>3. Trade-offs</h2>
+            <ul>
+              <li><strong>Usability vs. safety:</strong> A 1 MiB ceiling is generous enough for all legitimate <code>/path</code> payloads while blocking abusive sizes; the cost is a hard limit that future large-payload features would need to raise deliberately.</li>
+              <li><strong>Scope vs. depth:</strong> A narrowly scoped, testable change was preferred over a broad refactor, to keep the improvement auditable and reversible.</li>
+            </ul>
+          </div>
+
+          <div class="section-card">
+            <h2>4. Uncertainty</h2>
+            <p>The backend is not observed running in production, so network exposure, TLS termination, reverse-proxy behaviour and host hardening are unknown. Ratings on the risk register assume the repository's default configuration (insecure gRPC port, env-default credentials, no auth middleware). The fix should be re-assessed once a deployment context is defined.</p>
+          </div>
+
+        </div>
+      </section>
+      <footer class="site-footer">
+        <div class="wrap"><p>MSc Computer Science &mdash; Secure Software Development &middot; University of Essex Online &middot; October 2026.</p></div>
+      </footer>
+    </main>
+  </div>
+  <script src="../assets/scripts/main.js"></script>
+</body>
+</html>

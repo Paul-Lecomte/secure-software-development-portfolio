@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Risk register &mdash; Secure Software Development e-Portfolio</title>
+  <meta name="description" content="Prioritised security risk register with likelihood, impact, mitigations and residual risks for the routing backend and SwissTransitMap.">
+  <link rel="stylesheet" href="../assets/styles/main.css">
+  <link rel="icon" href="../assets/diagrams/favicon.svg">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
+    <aside class="nav-wrap" id="navWrap">
+      <div class="nav-inner">
+        <a href="../index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>
+        <div class="nav-section-title">Assessment</div>
+        <ul class="nav-list">
+          <li><a href="../index.html">Home &amp; audit summary</a></li>
+          <li><a href="learning-outcomes.html">Learning outcomes</a></li>
+          <li><a href="system-overview.html">System overview</a></li>
+          <li><a href="threat-model.html">Threat model</a></li>
+          <li><a href="risk-assessment.html" class="active">Risk register</a></li>
+          <li><a href="secure-design.html">Secure design</a></li>
+          <li><a href="implementation.html">Implementation</a></li>
+          <li><a href="security-testing.html">Security testing</a></li>
+          <li><a href="critical-evaluation.html">Critical evaluation</a></li>
+          <li><a href="references.html">References</a></li>
+        </ul>
+        <div class="nav-section-title">Evidence</div>
+        <ul class="nav-list">
+          <li><a href="../evidence/README.html">Evidence index</a></li>
+        </ul>
+      </div>
+    </aside>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navWrap">&#9776;</button>
+    <main class="main" id="main" tabindex="-1">
+      <header class="site-header">
+        <div class="wrap"><h1>Risk register</h1><div class="meta">Prioritised security risks with likelihood, impact and mitigations</div></div>
+      </header>
+      <section class="content">
+        <div class="wrap">
+          <p>This risk register prioritises the security risks identified during the audit. Likelihood and impact are rated qualitatively (Low/Medium/High) with explicit rationale and stated uncertainty. Precise CVSS scores are not assigned where the necessary technical evidence (deployment context, network exposure, exploit conditions) is unavailable.</p>
+          <div class="section-card">
+            <h2>1. Prioritised risk register</h2>
+            <table class="matrix-table">
+              <tr><th>#</th><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Priority</th><th>Evidence / reference</th><th>Mitigation</th></tr>
+              <tr><td>R1</td><td>Memory exhaustion via oversized HTTP request body (<code>Content-Length</code>)</td><td>Medium</td><td>High</td><td>High</td><td><code>http_server.py:3283</code>; mitigated by <code>MAX_REQUEST_BODY_BYTES</code></td><td>Enforce 1 MiB body ceiling; return 413</td></tr>
+              <tr><td>R2</td><td>Unbounded <code>option_count</code> / <code>max_transfers</code> driving costly RAPTOR runs</td><td>Medium</td><td>Medium</td><td>Medium</td><td><code>http_server.py:3116-3140</code>; bounds exist but no upper cap on <code>option_count</code></td><td>Add hard upper caps; server-side timeouts</td></tr>
+              <tr><td>R3</td><td>No TLS on gRPC port <code>:50051</code> (insecure binding)</td><td>Configuration-dependent</td><td>High</td><td>Medium</td><td><code>server.py:305</code> (<code>add_insecure_port</code>)</td><td>Use <code>add_secure_port</code> with TLS in production</td></tr>
+              <tr><td>R4</td><td>Hardcoded default Neo4j credentials (<code>neo4j/neo4j</code>) when env unset</td><td>Configuration-dependent</td><td>High</td><td>Medium</td><td><code>config.py:31-34</code></td><td>Require env vars; fail closed if missing</td></tr>
+              <tr><td>R5</td><td>Pickle deserialization of network cache (<code>allow_pickle=True</code>)</td><td>Low</td><td>High</td><td>Medium</td><td><code>loader.py:598</code>, <code>loader.py:922</code></td><td>Avoid unpickling untrusted caches; sign/verify cache</td></tr>
+              <tr><td>R6</td><td>No authentication/authorisation on routing endpoints</td><td>High</td><td>Low&ndash;Medium</td><td>Low</td><td><code>http_server.py</code>, <code>server.py</code> (no auth middleware)</td><td>Add auth if service exposes sensitive data</td></tr>
+              <tr><td>R7</td><td>SwissTransitMap: CORS / JWT / cookie configuration to verify</td><td>Configuration-dependent</td><td>Medium</td><td>Low</td><td><code>corsOptions.js</code>, <code>server.js:22-27</code></td><td>Review CORS allowlist, JWT secret, cookie flags</td></tr>
+            </table>
+          </div>
+
+          <div class="section-card">
+            <h2>2. Likelihood and impact rationale</h2>
+            <p>Likelihood reflects how readily the condition can be triggered given the observed code and default deployment (local/localhost dev, unauthenticated endpoints). Impact reflects the consequence for confidentiality, integrity or availability of the assets in Section 3 of the system overview. Where a risk depends on deployment choices (TLS, env values, hosting), it is marked configuration-dependent and no precise CVSS score is assigned.</p>
+            <p><strong>Uncertainty:</strong> The backend is not observed in a deployed production environment, so network exposure, TLS termination, authentication layers and host hardening cannot be confirmed. Ratings assume the service runs as configured in the repository (insecure gRPC port, env-default credentials, no auth middleware).</p>
+          </div>
+
+          <div class="section-card">
+            <h2>3. Existing controls and limitations</h2>
+            <ul>
+              <li>Input validation on <code>max_transfers</code>, <code>option_count</code>, <code>departure_time</code>, <code>algorithm</code> (<code>http_server.py:3106-3140</code>) &mdash; limits exist but no hard upper cap on <code>option_count</code>.</li>
+              <li>gRPC/RAPTOR fallback chain (RAPTOR &rarr; A* &rarr; Dijkstra) improves reliability, not security.</li>
+              <li>OSRM failure backoff and circuit-breaker (<code>_osrm_failure_count</code>, <code>_osrm_disabled_until</code>) limits outbound abuse.</li>
+              <li>Helmet and CORS on the Express API (<code>server.js:22-27</code>) &mdash; configuration to verify.</li>
+            </ul>
+          </div>
+
+          <div class="section-card">
+            <h2>4. Residual risks and future improvements</h2>
+            <ul>
+              <li>Even with the 1 MiB body ceiling, a burst of many concurrent valid requests could still exhaust CPU/memory (no rate limiting or concurrency caps).</li>
+              <li>gRPC remains on an insecure port unless TLS is deployed.</li>
+              <li>No audit logging of request origin or user identity.</li>
+              <li>Neo4j credentials must be injected via environment; defaults must never be used in production.</li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+      <footer class="site-footer">
+        <div class="wrap"><p>MSc Computer Science &mdash; Secure Software Development &middot; University of Essex Online &middot; October 2026.</p></div>
+      </footer>
+    </main>
+  </div>
+  <script src="../assets/scripts/main.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>References &mdash; Secure Software Development e-Portfolio</title>
+  <meta name="description" content="Credible and verified sources cited in the portfolio: OWASP, NIST, Python, gRPC, Neo4j, and related security guidance.">
+  <link rel="stylesheet" href="../assets/styles/main.css">
+  <link rel="icon" href="../assets/diagrams/favicon.svg">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
+    <aside class="nav-wrap" id="navWrap">
+      <div class="nav-inner">
+        <a href="../index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>
+        <div class="nav-section-title">Assessment</div>
+        <ul class="nav-list">
+          <li><a href="../index.html">Home &amp; audit summary</a></li>
+          <li><a href="learning-outcomes.html">Learning outcomes</a></li>
+          <li><a href="system-overview.html">System overview</a></li>
+          <li><a href="threat-model.html">Threat model</a></li>
+          <li><a href="risk-assessment.html">Risk register</a></li>
+          <li><a href="secure-design.html">Secure design</a></li>
+          <li><a href="implementation.html">Implementation</a></li>
+          <li><a href="security-testing.html">Security testing</a></li>
+          <li><a href="critical-evaluation.html">Critical evaluation</a></li>
+          <li><a href="references.html" class="active">References</a></li>
+        </ul>
+        <div class="nav-section-title">Evidence</div>
+        <ul class="nav-list">
+          <li><a href="../evidence/README.html">Evidence index</a></li>
+        </ul>
+      </div>
+    </aside>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navWrap">&#9776;</button>
+    <main class="main" id="main" tabindex="-1">
+      <header class="site-header">
+        <div class="wrap"><h1>References</h1><div class="meta">Credible and verified sources</div></div>
+      </header>
+      <section class="content">
+        <div class="wrap">
+          <p>Sources cited in this portfolio. Bibliographic details are given as published by the issuing organisation; no papers, DOIs, quotations, page numbers or publication dates have been invented. Where a referencing style is required by the module, this list should be reformatted accordingly (see note below).</p>
+
+          <div class="section-card">
+            <h2>Authoritative technical sources</h2>
+            <table>
+              <tr><th>#</th><th>Source</th><th>URL</th><th>Used for</th></tr>
+              <tr><td>1</td><td>OWASP Foundation. <em>OWASP Top Ten 2021</em> &mdash; web application security risks (incl. A04:2021 Insecure Design, A05:2021 Security Misconfiguration).</td><td>https://owasp.org/www-project-top-ten/</td><td>Threat categories, secure design principles</td></tr>
+              <tr><td>2</td><td>OWASP Foundation. <em>OWASP Application Security Verification Standard (ASVS)</em> &mdash; input validation, authentication, communications verification requirements.</td><td>https://owasp.org/www-project-application-security-verification-standard/</td><td>Control requirements</td></tr>
+              <tr><td>3</td><td>Microsoft. <em>Microsoft Threat Modeling Tool threats &mdash; STRIDE model</em> &mdash; Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege.</td><td>https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats</td><td>Threat-model methodology</td></tr>
+              <tr><td>4</td><td>NIST. <em>SP 800-53 Rev. 5 &mdash; Security and Privacy Controls for Information Systems and Organisations</em>.</td><td>https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final</td><td>Control selection rationale</td></tr>
+              <tr><td>5</td><td>NIST. <em>SP 800-63B &mdash; Digital Identity Guidelines, Federation and Assertions</em> &mdash; secrets and token handling.</td><td>https://csrc.nist.gov/publications/detail/sp/800-63b/final</td><td>Credential handling context</td></tr>
+              <tr><td>6</td><td>Python Software Foundation. <em>Python 3.12 documentation</em> &mdash; <code>http.server</code>, <code>json</code> standard library.</td><td>https://docs.python.org/3/</td><td>HTTP handler behaviour</td></tr>
+              <tr><td>7</td><td>gRPC authors. <em>gRPC documentation</em> &mdash; secure channels, authentication, insecure ports.</td><td>https://grpc.io/docs/</td><td>gRPC binding and TLS guidance</td></tr>
+              <tr><td>8</td><td>Neo4j. <em>Neo4j Operations Manual and developer docs</em> &mdash; authentication, connection configuration.</td><td>https://neo4j.com/docs/</td><td>Neo4j credential handling</td></tr>
+              <tr><td>9</td><td>Numba project. <em>Numba documentation</em> &mdash; JIT compilation and supported Python versions.</td><td>https://numba.readthedocs.io/</td><td>Runtime context</td></tr>
+              <tr><td>10</td><td>OWASP Foundation. <em>OWASP Deserialization Cheat Sheet</em> &mdash; risks of deserialising untrusted data (pickle).</td><td>https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html</td><td>Pickle cache risk</td></tr>
+            </table>
+          </div>
+
+          <div class="section-card">
+            <h2>Repositories inspected (primary evidence)</h2>
+            <table>
+              <tr><th>Repository</th><th>Commit SHA</th><th>Commit date</th><th>Audited</th><th>URL</th></tr>
+              <tr><td>fastest_path_backend (Python routing backend)</td><td><code>90a50769c4c2013f8e2f7d0241d883cc7b3befd2</code></td><td>17 July 2026</td><td>21 Oct 2026</td><td>https://github.com/Paul-Lecomte/fastest_path_backend</td></tr>
+              <tr><td>swiss-pb-map (SwissTransitMap full-stack system)</td><td><code>610e4342f747d03b68c11bc281b7830abda047ac</code></td><td>13 February 2026</td><td>21 Oct 2026</td><td>https://github.com/Paul-Lecomte/swiss-pb-map</td></tr>
+              <tr><td>secure-software-development-portfolio (this site)</td><td>&mdash;</td><td>&mdash;</td><td>21 Oct 2026</td><td>https://github.com/Paul-Lecomte/secure-software-development-portfolio</td></tr>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <strong>Referencing style note.</strong> The University of Essex Online referencing style was not supplied, so this list uses a consistent provisional author&ndash;title&ndash;URL format. Please confirm the required style (e.g., Harvard, APA, IEEE) with your tutor and reformat this page accordingly before submission. In-text citations in this portfolio refer to the numbered sources above.
+          </div>
+
+        </div>
+      </section>
+      <footer class="site-footer">
+        <div class="wrap"><p>MSc Computer Science &mdash; Secure Software Development &middot; University of Essex Online &middot; October 2026.</p></div>
+      </footer>
+    </main>
+  </div>
+  <script src="../assets/scripts/main.js"></script>
+</body>
+</html>
+

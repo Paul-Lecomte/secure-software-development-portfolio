@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Secure design &mdash; Secure Software Development e-Portfolio</title>
+  <meta name="description" content="Security-related architecture and design decisions, alternative mitigations and tool justification for the routing backend.">
+  <link rel="stylesheet" href="../assets/styles/main.css">
+  <link rel="icon" href="../assets/diagrams/favicon.svg">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
+    <aside class="nav-wrap" id="navWrap">
+      <div class="nav-inner">
+        <a href="../index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>
+        <div class="nav-section-title">Assessment</div>
+        <ul class="nav-list">
+          <li><a href="../index.html">Home &amp; audit summary</a></li>
+          <li><a href="learning-outcomes.html">Learning outcomes</a></li>
+          <li><a href="system-overview.html">System overview</a></li>
+          <li><a href="threat-model.html">Threat model</a></li>
+          <li><a href="risk-assessment.html">Risk register</a></li>
+          <li><a href="secure-design.html" class="active">Secure design</a></li>
+          <li><a href="implementation.html">Implementation</a></li>
+          <li><a href="security-testing.html">Security testing</a></li>
+          <li><a href="critical-evaluation.html">Critical evaluation</a></li>
+          <li><a href="references.html">References</a></li>
+        </ul>
+        <div class="nav-section-title">Evidence</div>
+        <ul class="nav-list">
+          <li><a href="../evidence/README.html">Evidence index</a></li>
+        </ul>
+      </div>
+    </aside>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navWrap">&#9776;</button>
+    <main class="main" id="main" tabindex="-1">
+      <header class="site-header">
+        <div class="wrap"><h1>Secure design</h1><div class="meta">Architecture and design decisions, alternatives and tool justification</div></div>
+      </header>
+      <section class="content">
+        <div class="wrap">
+          <p>This page documents the security-related architecture and design decisions for the routing backend, the alternatives considered, and the justification for chosen tools and mitigations.</p>
+
+          <div class="section-card">
+            <h2>1. Design decisions</h2>
+            <table>
+              <tr><th>Decision</th><th>Rationale</th><th>Security effect</th></tr>
+              <tr><td>Single JSON body ceiling (<code>MAX_REQUEST_BODY_BYTES</code> = 1 MiB) on <code>/path</code></td><td>The handler reads <code>self.rfile.read(length)</code> using the client-supplied <code>Content-Length</code> with no upper bound; a malicious or erroneous client could allocate a multi-gigabyte buffer and exhaust server memory (single process, ThreadingHTTPServer).</td><td>Caps per-request memory; returns HTTP 413 for oversized bodies.</td></tr>
+              <tr><td>Reject negative and non-numeric <code>Content-Length</code></td><td>Defensive handling of malformed headers before any allocation.</td><td>Avoids undefined behaviour and 500 errors on bad input.</td></tr>
+              <tr><td>Existing per-field validation retained</td><td><code>max_transfers</code> (&ge;0), <code>option_count</code> (&ge;1), <code>departure_time</code> parsing, <code>algorithm</code> whitelist are already validated (<code>http_server.py</code>).</td><td>Reduces malformed-query attack surface.</td></tr>
+            </table>
+          </div>
+          <div class="section-card">
+            <h2>2. Alternative mitigation strategies considered</h2>
+            <table>
+              <tr><th>Alternative</th><th>Pros</th><th>Cons</th><th>Decision</th></tr>
+              <tr><td>No change (rely on existing field validation)</td><td>Zero compatibility risk</td><td>Body size unbounded; memory-exhaustion vector remains</td><td>Rejected</td></tr>
+              <tr><td>Reverse proxy / WAF request-size limit (e.g., nginx <code>client_max_body_size</code>)</td><td>Offloads concern; operates before the app</td><td>Adds infrastructure; not part of the repo; doesn't protect direct gRPC access</td><td>Recommended for deployment</td></tr>
+              <tr><td>Application-level body ceiling (implemented)</td><td>Self-contained, testable, travels with the code; covers direct HTTP access</td><td>Only covers the Python HTTP server, not gRPC or a future reverse proxy</td><td>Implemented</td></tr>
+              <tr><td>Per-IP rate limiting + concurrency caps</td><td>Addresses burst/DoS beyond a single large body</td><td>Requires state store; broader scope than the targeted fix</td><td>Deferred (future work)</td></tr>
+            </table>
+          </div>
+
+          <div class="section-card">
+            <h2>3. Tool justification</h2>
+            <ul>
+              <li><strong>pytest</strong> &mdash; standard Python test runner; already the project's test framework (<code>python -m pytest</code> in README).</li>
+              <li><strong>Python standard library <code>http.server</code></strong> &mdash; the fix is in the existing handler; no new dependency introduced.</li>
+              <li><strong>Static analysis / dependency scanning</strong> &mdash; recommended tools: <code>bandit</code> (Python SAST), <code>pip-audit</code> / <code>safety</code> (dependency vulnerabilities). Not installed in the audit environment; documented as a recommended CI step rather than claimed as run.</li>
+            </ul>
+          </div>
+
+          <div class="callout callout-warn">
+            <strong>Scope note.</strong> This change addresses the HTTP request path only. The gRPC binding (<code>server.py:305</code>, insecure port), Neo4j credential defaults (<code>config.py:31-34</code>), and pickle deserialization (<code>loader.py</code>) remain as documented risks requiring separate deployment-level controls.
+          </div>
+
+        </div>
+      </section>
+      <footer class="site-footer">
+        <div class="wrap"><p>MSc Computer Science &mdash; Secure Software Development &middot; University of Essex Online &middot; October 2026.</p></div>
+      </footer>
+    </main>
+  </div>
+  <script src="../assets/scripts/main.js"></script>
+</body>
+</html>
+

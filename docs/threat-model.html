@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Threat model &mdash; Secure Software Development e-Portfolio</title>
+  <meta name="description" content="STRIDE threat model for the Python transit-routing backend and SwissTransitMap, with trust boundaries and threat actors.">
+  <link rel="stylesheet" href="../assets/styles/main.css">
+  <link rel="icon" href="../assets/diagrams/favicon.svg">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
+    <aside class="nav-wrap" id="navWrap">
+      <div class="nav-inner">
+        <a href="../index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>
+        <div class="nav-section-title">Assessment</div>
+        <ul class="nav-list">
+          <li><a href="../index.html">Home &amp; audit summary</a></li>
+          <li><a href="learning-outcomes.html">Learning outcomes</a></li>
+          <li><a href="system-overview.html">System overview</a></li>
+          <li><a href="threat-model.html" class="active">Threat model</a></li>
+          <li><a href="risk-assessment.html">Risk register</a></li>
+          <li><a href="secure-design.html">Secure design</a></li>
+          <li><a href="implementation.html">Implementation</a></li>
+          <li><a href="security-testing.html">Security testing</a></li>
+          <li><a href="critical-evaluation.html">Critical evaluation</a></li>
+          <li><a href="references.html">References</a></li>
+        </ul>
+        <div class="nav-section-title">Evidence</div>
+        <ul class="nav-list">
+          <li><a href="../evidence/README.html">Evidence index</a></li>
+        </ul>
+      </div>
+    </aside>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navWrap">&#9776;</button>
+    <main class="main" id="main" tabindex="-1">
+      <header class="site-header">
+        <div class="wrap"><h1>Threat model</h1><div class="meta">STRIDE analysis of assets, trust boundaries and threat actors</div></div>
+      </header>
+      <section class="content">
+        <div class="wrap">
+          <p>This threat model applies the STRIDE methodology (Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege) to the systems in scope. It identifies trust boundaries, plausible threat actors and representative threats. Each threat is classified as confirmed, potential (requiring verification), configuration-dependent, a general improvement, or informational &mdash; consistent with the requirement that a source-code pattern alone does not establish exploitability.</p>
+          <div class="section-card">
+            <h2>1. Trust boundaries</h2>
+            <ul>
+              <li>Unauthenticated client &rarr; HTTP <code>/path</code> (<code>0.0.0.0:8080</code>).</li>
+              <li>Client &rarr; gRPC <code>RouteSearch</code> on <code>[::]:50051</code> &mdash; <strong>insecure port, no TLS</strong> (<code>src/server.py:305</code>).</li>
+              <li>Backend &rarr; Neo4j (env credentials; defaults <code>neo4j/neo4j</code> &mdash; <code>src/config.py:31-34</code>).</li>
+              <li>Backend &rarr; disk pickle cache &mdash; deserialization boundary (<code>loader.py:922</code>, <code>loader.py:598 allow_pickle=True</code>).</li>
+              <li>Backend &rarr; external OSRM walking router (outbound HTTP).</li>
+              <li>SwissTransitMap frontend &rarr; Express API (CORS-configured).</li>
+              <li>Express API &rarr; MongoDB (Mongoose queries).</li>
+            </ul>
+          </div>
+
+          <div class="section-card">
+            <h2>2. Plausible threat actors</h2>
+            <ul>
+              <li><strong>Unauthenticated API client</strong> &mdash; sends crafted HTTP/gRPC requests to the routing service.</li>
+              <li><strong>Network adversary</strong> &mdash; observes/modifies traffic on insecure HTTP and gRPC bindings.</li>
+              <li><strong>Local user / process</strong> &mdash; reads or replaces the pickle cache or .env file on the server host.</li>
+              <li><strong>Malicious GTFS / data contributor</strong> &mdash; ingests crafted stop or timetable records.</li>
+            </ul>
+          </div>
+
+          <div class="section-card">
+            <h2>3. STRIDE threat model</h2>
+            <table>
+              <tr><th>STRIDE</th><th>Threat</th><th>Target / reference</th><th>Classification</th></tr>
+              <tr><td>Spoofing</td><td>Caller impersonates another client; no auth on HTTP/gRPC bindings</td><td><code>http_server.py</code>, <code>server.py</code></td><td>Configuration-dependent</td></tr>
+              <tr><td>Tampering</td><td>Altered request fields (<code>departure_time</code>, <code>max_transfers</code>, <code>option_count</code>) cause excessive computation</td><td><code>http_server.py:3111-3140</code></td><td>Potential &mdash; verify</td></tr>
+              <tr><td>Repudiation</td><td>No request/audit logging of who issued a routing query</td><td><code>http_server.py</code>, <code>server.py</code></td><td>Informational</td></tr>
+              <tr><td>Information disclosure</td><td>Insecure gRPC port exposes traffic to network eavesdropping</td><td><code>server.py:305</code></td><td>Configuration-dependent</td></tr>
+              <tr><td>Denial of service</td><td>Unbounded request body / <code>Content-Length</code> exhausts memory; unbounded <code>option_count</code>, <code>max_transfers</code> drive expensive RAPTOR runs</td><td><code>http_server.py:3283</code>, <code>http_server.py:3116-3140</code>, <code>server.py</code></td><td>Confirmed pattern &mdash; mitigated (see implementation)</td></tr>
+              <tr><td>Elevation of privilege</td><td>Hardcoded default Neo4j credentials if env unset; no authz between query roles</td><td><code>config.py:31-34</code></td><td>Configuration-dependent</td></tr>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <strong>Classification notes.</strong> &ldquo;Confirmed pattern&rdquo; means the code pattern exists and is exploitable under realistic conditions (e.g., an attacker controls the request body size); &ldquo;potential&rdquo; means verification is required; &ldquo;configuration-dependent&rdquo; means risk depends on deployment (e.g., TLS termination, env values). No precise CVSS scores are assigned without deployment evidence.
+          </div>
+
+        </div>
+      </section>
+      <footer class="site-footer">
+        <div class="wrap"><p>MSc Computer Science &mdash; Secure Software Development &middot; University of Essex Online &middot; October 2026.</p></div>
+      </footer>
+    </main>
+  </div>
+  <script src="../assets/scripts/main.js"></script>
+</body>
+</html>
+

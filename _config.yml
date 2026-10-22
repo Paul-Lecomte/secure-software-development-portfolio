@@ -1,0 +1,37 @@
+# GitHub Pages configuration.
+#
+# The site is plain static HTML/CSS/JS with no build step. A `.nojekyll` file
+# is present at the repository root, which makes GitHub Pages serve the files
+# verbatim (no Jekyll processing, no Liquid templating). This file exists so
+# that the site can also be previewed locally with `jekyll serve` if desired.
+#
+# If you switch to Jekyll rendering, remove `.nojekyll` and set `baseurl` to
+# "/secure-software-development-portfolio" for a project site.
+
+title: "Secure Software Development e-Portfolio"
+description: "MSc Computer Science (University of Essex Online) — Secure Software Development module e-portfolio by Paul Lecomte."
+
+# No build step — plain static HTML/CSS/JS.
+markdown: kramdown
+highlighter: rouge
+
+# Serve the site from the repository root.
+baseurl: ""
+url: "https://paul-lecomte.github.io"
+
+# Keep Jekyll from processing the plain static files.
+include:
+  - "*.html"
+  - "README.md"
+  - "LICENSE"
+  - "robots.txt"
+  - "assets"
+  - "docs"
+  - "discussions"
+  - "professional-development"
+  - "evidence"
+
+exclude:
+  - "tools/"
+  - ".github/"
+  - "*.py"

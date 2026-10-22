@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>System overview &mdash; Secure Software Development e-Portfolio</title>
+  <meta name="description" content="System scope, architecture, assets, trust boundaries and attack-surface analysis for the Python routing backend and SwissTransitMap.">
+  <link rel="stylesheet" href="../assets/styles/main.css">
+  <link rel="icon" href="../assets/diagrams/favicon.svg">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
+    <aside class="nav-wrap" id="navWrap">
+      <div class="nav-inner">
+        <a href="../index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>
+        <div class="nav-section-title">Assessment</div>
+        <ul class="nav-list">
+          <li><a href="../index.html">Home &amp; audit summary</a></li>
+          <li><a href="learning-outcomes.html">Learning outcomes</a></li>
+          <li><a href="system-overview.html" class="active">System overview</a></li>
+          <li><a href="threat-model.html">Threat model</a></li>
+          <li><a href="risk-assessment.html">Risk register</a></li>
+          <li><a href="secure-design.html">Secure design</a></li>
+          <li><a href="implementation.html">Implementation</a></li>
+          <li><a href="security-testing.html">Security testing</a></li>
+          <li><a href="critical-evaluation.html">Critical evaluation</a></li>
+          <li><a href="references.html">References</a></li>
+        </ul>
+        <div class="nav-section-title">Evidence</div>
+        <ul class="nav-list">
+          <li><a href="../evidence/README.html">Evidence index</a></li>
+        </ul>
+      </div>
+    </aside>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navWrap">&#9776;</button>
+    <main class="main" id="main" tabindex="-1">
+      <header class="site-header">
+        <div class="wrap"><h1>System overview</h1><div class="meta">Scope, architecture, assets, trust boundaries, attack surface</div></div>
+      </header>
+      <section class="content">
+        <div class="wrap">
+          <p>This page describes the systems in scope for the security audit, their architecture, important assets, trust boundaries and attack surfaces. All observations are grounded in the inspected source code at the recorded commit SHAs.</p>
+
+          <div class="section-card">
+            <h2>1. Audit metadata</h2>
+            <table>
+              <tr><th>Item</th><th>Value</th></tr>
+              <tr><td>Audit date</td><td>21 October 2026</td></tr>
+              <tr><td>Auditor</td><td>Paul Lecomte (MSc Computer Science, University of Essex Online)</td></tr>
+              <tr><td>Primary case study</td><td><code>fastest_path_backend</code> &mdash; Python transit-routing backend</td></tr>
+              <tr><td>Commit (backend)</td><td><code>90a50769c4c2013f8e2f7d0241d883cc7b3befd2</code> (origin/main, 17 July 2026)</td></tr>
+              <tr><td>Supporting system</td><td><code>swiss-pb-map</code> &mdash; SwissTransitMap full-stack application</td></tr>
+              <tr><td>Commit (frontend)</td><td><code>610e4342f747d03b68c11bc281b7830abda047ac</code> (origin/main, 13 February 2026)</td></tr>
+              <tr><td>Access method</td><td>Public GitHub repositories cloned to a local audit working directory</td></tr>
+            </table>
+          </div>
+          <div class="section-card">
+            <h2>2. System scope and architecture</h2>
+            <h3>Primary case study &mdash; Python routing backend (<code>fastest_path_backend</code>)</h3>
+            <p>A high-performance public-transit route-planning microservice using the RAPTOR algorithm with NumPy/Numba acceleration. It loads GTFS-like transit data (optionally from Neo4j, with a disk cache and a mock-network fallback) and exposes earliest-arrival path searches over two network bindings:</p>
+            <ul>
+              <li><strong>HTTP</strong> &mdash; <code>ThreadingHTTPServer</code> on <code>0.0.0.0:8080</code>, single endpoint <code>POST /path</code> (source: <code>src/http_server.py</code>).</li>
+              <li><strong>gRPC</strong> &mdash; asynchronous gRPC server on <code>[::]:50051</code>, service <code>RouteSearch</code>, method <code>GetFastestPath</code> (source: <code>src/server.py</code>, proto <code>proto/pathfinding.proto</code>).</li>
+            </ul>
+            <p>Key modules: <code>src/config.py</code> (env + Neo4j config), <code>src/loader.py</code> (Neo4j load + pickle cache), <code>src/solver.py</code> (RAPTOR/Dijkstra/A*), <code>tests/test_smoke.py</code> (26 tests).</p>
+            <h3>Supporting system &mdash; SwissTransitMap (<code>swiss-pb-map</code>)</h3>
+            <p>Full-stack Swiss public-transport visualization and route-planning app. Frontend: Next.js 16 / React 19 / TypeScript / Leaflet. Backend: Node.js / Express on port 3000/4000. Database: MongoDB via Mongoose. Uses JWT (<code>jsonwebtoken</code>) and bcrypt, Helmet, CORS, morgan. Calls the Python backend for fastest-path computation. GTFS ingestion pipelines load stops, routes, trips and stop times into MongoDB.</p>
+          </div>
+
+          <div class="section-card">
+            <h2>3. Important assets</h2>
+            <table>
+              <tr><th>Asset</th><th>Why it matters</th><th>System</th></tr>
+              <tr><td>Transit network graph &amp; timetables (Neo4j / pickle cache)</td><td>Core routing data; integrity affects route correctness</td><td>Backend</td></tr>
+              <tr><td>Neo4j credentials (<code>NEO4J_URI/USER/PASSWORD</code>)</td><td>Default credentials <code>neo4j/neo4j</code> if env unset (<code>src/config.py:31-34</code>)</td><td>Backend</td></tr>
+              <tr><td>JWT signing secret (SwissTransitMap)</td><td>Session/identity integrity for any auth flows</td><td>SwissTransitMap</td></tr>
+              <tr><td>bcrypt password hashes (SwissTransitMap)</td><td>Credential store</td><td>SwissTransitMap</td></tr>
+              <tr><td>HTTP/gRPC service availability</td><td>Routing queries depend on the service being reachable</td><td>Backend</td></tr>
+              <tr><td>GTFS source data &amp; processed MongoDB collections</td><td>Feed integrity underpins map and search results</td><td>SwissTransitMap</td></tr>
+            </table>
+          </div>
+
+          <div class="section-card">
+            <h2>4. Trust boundaries</h2>
+            <ul>
+              <li>Client &rarr; HTTP endpoint (<code>/path</code>): unauthenticated, network-exposed.</li>
+              <li>Client &rarr; gRPC endpoint (<code>:50051</code>): insecure port, no TLS (<code>src/server.py:305</code>).</li>
+              <li>Backend &rarr; Neo4j: database access using env-configured credentials.</li>
+              <li>Backend &rarr; disk pickle cache (<code>.cache/transit_network.pkl</code>): deserialization boundary (<code>loader.py:922</code>, <code>loader.py:598</code> with <code>allow_pickle=True</code>).</li>
+              <li>SwissTransitMap frontend &rarr; Express API: CORS-configured cross-origin boundary.</li>
+              <li>Express API &rarr; MongoDB: query boundary (Mongoose).</li>
+              <li>Backend &rarr; external OSRM walking service (outbound HTTP).</li>
+            </ul>
+          </div>
+
+          <div class="section-card">
+            <h2>5. Attack-surface analysis</h2>
+            <table>
+              <tr><th>Surface</th><th>Entry points</th><th>Exposure</th></tr>
+              <tr><td>HTTP <code>/path</code> body parsing</td><td><code>Content-Length</code>-driven <code>self.rfile.read(length)</code> (<code>http_server.py:3283</code>)</td><td>Network (unauthenticated)</td></tr>
+              <tr><td>HTTP query parameters</td><td><code>start_stop_id</code>, <code>end_stop_id</code>, <code>origin</code>, <code>destination</code>, <code>departure_time</code>, <code>max_transfers</code>, <code>option_count</code></td><td>Network</td></tr>
+              <tr><td>gRPC <code>GetFastestPath</code></td><td><code>start_stop_id</code>, <code>end_stop_id</code>, <code>departure_time</code>, <code>start_stop_ids</code></td><td>Network (insecure port)</td></tr>
+              <tr><td>Neo4j connection</td><td>Credentials from env; defaults hardcoded</td><td>Local / network</td></tr>
+              <tr><td>Pickle cache load</td><td><code>pickle.load</code> / <code>np.load(allow_pickle=True)</code></td><td>Local file</td></tr>
+              <tr><td>OSRM outbound call</td><td><code>urllib</code> request to external walking router</td><td>Outbound network</td></tr>
+              <tr><td>SwissTransitMap Express API</td><td>REST endpoints, JWT cookies, CORS</td><td>Network</td></tr>
+            </table>
+          </div>
+
+        </div>
+      </section>
+      <footer class="site-footer">
+        <div class="wrap"><p>MSc Computer Science &mdash; Secure Software Development &middot; University of Essex Online &middot; October 2026.</p></div>
+      </footer>
+    </main>
+  </div>
+  <script src="../assets/scripts/main.js"></script>
+</body>
+</html>
+

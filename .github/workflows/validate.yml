@@ -1,0 +1,31 @@
+name: Validate portfolio
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Links, references and served pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate internal links and HTML structure
+        run: python tools/validate_links.py
+
+      - name: Check external URLs
+        run: python tools/check_urls.py
+
+      - name: Verify all served paths return HTTP 200
+        run: python tools/check_served.py

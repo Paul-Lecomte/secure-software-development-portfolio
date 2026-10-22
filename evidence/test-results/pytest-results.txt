@@ -1,0 +1,40 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.7.0 -- C:\Users\lecom\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\lecom\audit-work\backend
+collecting ... collected 32 items
+
+tests/test_smoke.py::test_smoke_mock_network PASSED                      [  3%]
+tests/test_smoke.py::test_smoke_mock_network_dijkstra PASSED             [  6%]
+tests/test_smoke.py::test_smoke_mock_network_astar PASSED                [  9%]
+tests/test_smoke.py::test_multi_departure_response_offsets PASSED        [ 12%]
+tests/test_smoke.py::test_http_multi_start_selects_fastest_path PASSED   [ 15%]
+tests/test_smoke.py::test_http_segments_include_stop_coordinates PASSED  [ 18%]
+tests/test_smoke.py::test_transfer_segment_includes_walking_geometry PASSED [ 21%]
+tests/test_smoke.py::test_http_origin_destination_includes_access_and_egress_walk_segments PASSED [ 25%]
+tests/test_smoke.py::test_http_departure_parses_numeric_string_timestamp PASSED [ 28%]
+tests/test_smoke.py::test_http_raptor_returns_no_path_when_schedule_unavailable PASSED [ 31%]
+tests/test_smoke.py::test_origin_selects_candidate_starts_and_penalties PASSED [ 34%]
+tests/test_smoke.py::test_http_origin_route_without_explicit_start_ids PASSED [ 37%]
+tests/test_smoke.py::test_http_destination_selects_candidate_ends_and_penalties PASSED [ 40%]
+tests/test_smoke.py::test_http_origin_and_destination_route_without_explicit_stop_ids PASSED [ 43%]
+tests/test_smoke.py::test_get_start_stop_ids_prefers_repeated_field PASSED [ 46%]
+tests/test_smoke.py::test_resolve_stop_query_exact_stop_id PASSED        [ 50%]
+tests/test_smoke.py::test_resolve_stop_query_fuzzy_with_stop_names PASSED [ 53%]
+tests/test_smoke.py::test_resolve_stop_query_returns_none_for_unknown PASSED [ 56%]
+tests/test_smoke.py::test_parallel_multi_start_selects_fastest_path PASSED [ 59%]
+tests/test_smoke.py::test_raptor_handles_long_transfer_chain PASSED      [ 62%]
+tests/test_smoke.py::test_raptor_option_exposes_resolver_metadata PASSED [ 65%]
+tests/test_smoke.py::test_raptor_prefers_train_over_bus_when_weighted_cost_is_lower PASSED [ 68%]
+tests/test_smoke.py::test_raptor_prefers_shuttle_bus_over_short_walk_shortcut PASSED [ 71%]
+tests/test_smoke.py::test_transfer_cap_rejects_high_transfer_path PASSED [ 75%]
+tests/test_smoke.py::test_raptor_option_exposes_diagnostics_on_no_path PASSED [ 78%]
+tests/test_smoke.py::test_raptor_adaptive_destination_expansion_finds_path PASSED [ 81%]
+tests/test_request_limits.py::test_normal_payload_accepted PASSED        [ 84%]
+tests/test_request_limits.py::test_missing_content_length_rejected PASSED [ 87%]
+tests/test_request_limits.py::test_oversized_body_rejected_413 PASSED    [ 90%]
+tests/test_request_limits.py::test_body_at_limit_accepted PASSED         [ 93%]
+tests/test_request_limits.py::test_negative_content_length_rejected PASSED [ 96%]
+tests/test_request_limits.py::test_invalid_content_length_rejected PASSED [100%]
+
+============================= 32 passed in 2.75s ==============================

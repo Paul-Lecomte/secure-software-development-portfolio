@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Nothing in this site is private; the repository is public by design.

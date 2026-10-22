@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evidence index &mdash; Secure Software Development e-Portfolio</title>
+  <meta name="description" content="Index of reproducible evidence: test results, audit artefacts and screenshots for the routing backend security assessment.">
+  <link rel="stylesheet" href="../assets/styles/main.css">
+  <link rel="icon" href="../assets/diagrams/favicon.svg">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
+    <aside class="nav-wrap" id="navWrap">
+      <div class="nav-inner">
+        <a href="../index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>
+        <div class="nav-section-title">Evidence</div>
+        <ul class="nav-list">
+          <li><a href="README.html" class="active">Evidence index</a></li>
+          <li><a href="test-results/">Test results</a></li>
+        </ul>
+        <div class="nav-section-title">Assessment</div>
+        <ul class="nav-list">
+          <li><a href="../index.html">Home &amp; audit summary</a></li>
+          <li><a href="../docs/learning-outcomes.html">Learning outcomes</a></li>
+          <li><a href="../docs/security-testing.html">Security testing</a></li>
+        </ul>
+      </div>
+    </aside>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navWrap">&#9776;</button>
+    <main class="main" id="main" tabindex="-1">
+      <header class="site-header">
+        <div class="wrap"><h1>Evidence index</h1><div class="meta">Reproducible evidence for the security assessment</div></div>
+      </header>
+      <section class="content">
+        <div class="wrap">
+          <p>This folder holds the reproducible evidence produced during the audit and the implemented security improvement. Nothing here contains API keys, tokens, passwords, connection strings, real database contents or personal data.</p>
+
+          <div class="section-card">
+            <h2>1. What was verified</h2>
+            <ul>
+              <li>Baseline test suite (<code>tests/test_smoke.py</code>): <span class="status status-ok">26 passed</span> at commit <code>90a5076</code>.</li>
+              <li>After the request-body-limit fix (<code>tests/test_smoke.py</code> + <code>tests/test_request_limits.py</code>): <span class="status status-ok">32 passed</span>.</li>
+              <li>New regression tests: 6 tests in <code>tests/test_request_limits.py</code> covering normal, oversized, at-limit, negative, invalid and missing <code>Content-Length</code> handling.</li>
+            </ul>
+          </div>
+
+          <div class="section-card">
+            <h2>2. Evidence files</h2>
+            <table>
+              <tr><th>File</th><th>Description</th></tr>
+              <tr><td><code>tests/test_smoke.py</code> (backend)</td><td>Existing algorithm smoke tests; unchanged by the fix.</td></tr>
+              <tr><td><code>tests/test_request_limits.py</code> (backend, added)</td><td>Regression tests for the 1 MiB request-body ceiling.</td></tr>
+              <tr><td><code>src/http_server.py</code> (backend, modified)</td><td>Added <code>MAX_REQUEST_BODY_BYTES</code> and the 413 guard.</td></tr>
+              <tr><td><code>docs/security-testing.html</code></td><td>Full test baseline, results and before/after comparison.</td></tr>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <strong>Privacy.</strong> Screenshots, logs and test output are redacted of credentials, private IPs and personal data before inclusion. No exploit instructions targeting third-party systems are published.
+          </div>
+
+        </div>
+      </section>
+      <footer class="site-footer">
+        <div class="wrap"><p>MSc Computer Science &mdash; Secure Software Development &middot; University of Essex Online &middot; October 2026.</p></div>
+      </footer>
+    </main>
+  </div>
+  <script src="../assets/scripts/main.js"></script>
+</body>
+</html>

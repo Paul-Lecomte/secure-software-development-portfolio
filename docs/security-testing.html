@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Security testing &mdash; Secure Software Development e-Portfolio</title>
+  <meta name="description" content="Test baseline, implemented fix regression tests, actual results and before/after comparison for the request-body size limit.">
+  <link rel="stylesheet" href="../assets/styles/main.css">
+  <link rel="icon" href="../assets/diagrams/favicon.svg">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
+    <aside class="nav-wrap" id="navWrap">
+      <div class="nav-inner">
+        <a href="../index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>
+        <div class="nav-section-title">Assessment</div>
+        <ul class="nav-list">
+          <li><a href="../index.html">Home &amp; audit summary</a></li>
+          <li><a href="learning-outcomes.html">Learning outcomes</a></li>
+          <li><a href="system-overview.html">System overview</a></li>
+          <li><a href="threat-model.html">Threat model</a></li>
+          <li><a href="risk-assessment.html">Risk register</a></li>
+          <li><a href="secure-design.html">Secure design</a></li>
+          <li><a href="implementation.html">Implementation</a></li>
+          <li><a href="security-testing.html" class="active">Security testing</a></li>
+          <li><a href="critical-evaluation.html">Critical evaluation</a></li>
+          <li><a href="references.html">References</a></li>
+        </ul>
+        <div class="nav-section-title">Evidence</div>
+        <ul class="nav-list">
+          <li><a href="../evidence/README.html">Evidence index</a></li>
+        </ul>
+      </div>
+    </aside>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navWrap">&#9776;</button>
+    <main class="main" id="main" tabindex="-1">
+      <header class="site-header">
+        <div class="wrap"><h1>Security testing</h1><div class="meta">Test baseline, regression tests, actual results, before/after comparison</div></div>
+      </header>
+      <section class="content">
+        <div class="wrap">
+          <p>This page records the test baseline, the regression tests added for the implemented fix, and the actual results observed when the suite was run.</p>
+
+          <div class="section-card">
+            <h2>1. Test baseline (before the change)</h2>
+            <table>
+              <tr><th>Item</th><th>Value</th></tr>
+              <tr><td>Repository</td><td><code>fastest_path_backend</code>, commit <code>90a5076</code></td></tr>
+              <tr><td>Test command</td><td><code>python -m pytest tests/test_smoke.py -q</code></td></tr>
+              <tr><td>Environment</td><td>Python 3.12.10 (win32), Windows; pytest 9.1.1; grpcio 1.78.0, grpcio-tools 1.78.0, neo4j 6.1.0, numba 0.64.0, numpy 2.4.3, pandas 3.0.1, protobuf 6.33.6, python-dotenv 1.2.2</td></tr>
+              <tr><td>Baseline result</td><td><span class="status status-ok">26 passed</span> in 3.20s</td></tr>
+            </table>
+          </div>
+          <div class="section-card">
+            <h2>2. Regression tests added (after the change)</h2>
+            <p>New file: <code>tests/test_request_limits.py</code> (6 tests). The tests exercise <code>PathRequestHandler._read_json()</code> directly using a fake <code>rfile</code>/<code>headers</code> so no network server is required.</p>
+            <table>
+              <tr><th>Test</th><th>What it verifies</th><th>Expected</th></tr>
+              <tr><td><code>test_normal_payload_accepted</code></td><td>A well-formed <code>/path</code> body is not rejected for size</td><td>Not 413</td></tr>
+              <tr><td><code>test_missing_content_length_rejected</code></td><td>Missing <code>Content-Length</code> &rarr; 400</td><td>400 <code>missing_content_length</code></td></tr>
+              <tr><td><code>test_oversized_body_rejected_413</code></td><td>Body above the (monkeypatched) limit &rarr; 413</td><td>413 <code>request_entity_too_large</code></td></tr>
+              <tr><td><code>test_body_at_limit_accepted</code></td><td>Body exactly at the limit is accepted</td><td>Not 413</td></tr>
+              <tr><td><code>test_negative_content_length_rejected</code></td><td>Negative <code>Content-Length</code> &rarr; 400</td><td>400 <code>invalid_content_length</code></td></tr>
+              <tr><td><code>test_invalid_content_length_rejected</code></td><td>Non-numeric <code>Content-Length</code> &rarr; 400</td><td>400 <code>invalid_content_length</code></td></tr>
+            </table>
+          </div>
+
+          <div class="section-card">
+            <h2>3. Actual results (after the change)</h2>
+            <table>
+              <tr><th>Command</th><th>Result</th></tr>
+              <tr><td><code>python -m pytest tests/test_smoke.py tests/test_request_limits.py -q</code></td><td><span class="status status-ok">32 passed</span> in 2.78s (26 smoke + 6 request-limit)</td></tr>
+            </table>
+            <p>All 32 tests passed. The baseline smoke tests continue to pass, confirming no regression, and the new request-limit tests confirm the 413 behaviour.</p>
+          </div>
+
+          <div class="section-card">
+            <h2>4. Before-and-after comparison</h2>
+            <table>
+              <tr><th>Behaviour</th><th>Before</th><th>After</th></tr>
+              <tr><td>Oversized <code>Content-Length</code> body</td><td>Attempted <code>self.rfile.read(length)</code> &mdash; potential memory exhaustion / DoS</td><td>HTTP 413 <code>request_entity_too_large</code> before any allocation</td></tr>
+              <tr><td>Negative <code>Content-Length</code></td><td>Passed to <code>read()</code> (undefined/undesirable)</td><td>HTTP 400 <code>invalid_content_length</code></td></tr>
+              <tr><td>Non-numeric <code>Content-Length</code></td><td>HTTP 400 <code>invalid_content_length</code> (already handled)</td><td>Unchanged (HTTP 400)</td></tr>
+              <tr><td>Normal request</td><td>Processed normally</td><td>Processed normally (no change)</td></tr>
+              <tr><td>Test suite</td><td>26 passed</td><td>32 passed (no regression)</td></tr>
+            </table>
+          </div>
+
+          <div class="section-card">
+            <h2>5. Static analysis and dependency checks</h2>
+            <p>No dedicated SAST (e.g., <code>bandit</code>) or dependency-audit (e.g., <code>pip-audit</code>, <code>safety</code>) tool was installed in the audit environment, so no scanner output is claimed. Installed dependency versions (Python 3.12.10; grpcio 1.78.0; grpcio-tools 1.78.0; neo4j 6.1.0; numba 0.64.0; numpy 2.4.3; pandas 3.0.1; protobuf 6.33.6; python-dotenv 1.2.2) were recorded. Adding <code>bandit</code> and <code>pip-audit</code> to CI is listed as future work on the risk register.</p>
+          </div>
+
+          <div class="callout callout-info">
+            <strong>Evidence location.</strong> The change and tests live in the local audit clone <code>C:\Users\lecom\audit-work\backend</code> (files <code>src/http_server.py</code> and <code>tests/test_request_limits.py</code>). They have <strong>not</strong> been pushed to the origin repository, per the requirement not to modify the student's repositories without authorisation.
+          </div>
+
+        </div>
+      </section>
+      <footer class="site-footer">
+        <div class="wrap"><p>MSc Computer Science &mdash; Secure Software Development &middot; University of Essex Online &middot; October 2026.</p></div>
+      </footer>
+    </main>
+  </div>
+  <script src="../assets/scripts/main.js"></script>
+</body>
+</html>
+

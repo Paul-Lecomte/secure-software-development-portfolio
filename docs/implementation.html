@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Implementation &mdash; Secure Software Development e-Portfolio</title>
+  <meta name="description" content="Security-related code change: request-body size ceiling on the HTTP /path endpoint, with diff and compatibility notes.">
+  <link rel="stylesheet" href="../assets/styles/main.css">
+  <link rel="icon" href="../assets/diagrams/favicon.svg">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
+    <aside class="nav-wrap" id="navWrap">
+      <div class="nav-inner">
+        <a href="../index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>
+        <div class="nav-section-title">Assessment</div>
+        <ul class="nav-list">
+          <li><a href="../index.html">Home &amp; audit summary</a></li>
+          <li><a href="learning-outcomes.html">Learning outcomes</a></li>
+          <li><a href="system-overview.html">System overview</a></li>
+          <li><a href="threat-model.html">Threat model</a></li>
+          <li><a href="risk-assessment.html">Risk register</a></li>
+          <li><a href="secure-design.html">Secure design</a></li>
+          <li><a href="implementation.html" class="active">Implementation</a></li>
+          <li><a href="security-testing.html">Security testing</a></li>
+          <li><a href="critical-evaluation.html">Critical evaluation</a></li>
+          <li><a href="references.html">References</a></li>
+        </ul>
+        <div class="nav-section-title">Evidence</div>
+        <ul class="nav-list">
+          <li><a href="../evidence/README.html">Evidence index</a></li>
+        </ul>
+      </div>
+    </aside>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navWrap">&#9776;</button>
+    <main class="main" id="main" tabindex="-1">
+      <header class="site-header">
+        <div class="wrap"><h1>Implementation</h1><div class="meta">Security-related code change and compatibility notes</div></div>
+      </header>
+      <section class="content">
+        <div class="wrap">
+          <p>This page documents the implemented security improvement: a request-body size ceiling on the HTTP <code>/path</code> endpoint of the Python routing backend.</p>
+
+          <div class="section-card">
+            <h2>1. Issue addressed</h2>
+            <p><code>PathRequestHandler._read_json()</code> (<code>src/http_server.py</code>) read the request body using the client-supplied <code>Content-Length</code> header with no upper bound (<code>raw = self.rfile.read(length)</code>). A client could advertise an arbitrarily large <code>Content-Length</code>, causing the single-process <code>ThreadingHTTPServer</code> to attempt a large memory allocation &mdash; a denial-of-service vector (threat model: Denial of service; risk R1).</p>
+          </div>
+
+          <div class="section-card">
+            <h2>2. Change made</h2>
+            <p>Working branch: local audit clone (<code>C:\Users\lecom\audit-work\backend</code>). No changes were pushed to the origin repositories.</p>
+            <pre><code>+# Ceiling for a single JSON request body. Protects the JSON parsing path from
++# memory-exhaustion via an arbitrarily large Content-Length value.
++MAX_REQUEST_BODY_BYTES = 1024 * 1024  # 1 MiB
+...
++        if length < 0:
++            self._send_json(400, {"error": "invalid_content_length"})
++            return None
++        if length > MAX_REQUEST_BODY_BYTES:
++            self._send_json(
++                413, {"error": "request_entity_too_large", "limit_bytes": MAX_REQUEST_BODY_BYTES}
++            )
++            return None
++
++        raw = self.rfile.read(length)</code></pre>
+            <p>The constant is defined near the other HTTP defaults, and the check runs before <code>self.rfile.read()</code>, so oversized bodies are rejected with HTTP 413 before any allocation.</p>
+          </div>
+
+          <div class="section-card">
+            <h2>3. Compatibility risks assessed</h2>
+            <ul>
+              <li><strong>Legitimate large payloads:</strong> The <code>/path</code> schema is small (stop IDs, timestamps, optional GPS bounding objects). A well-formed request is far below 1 MiB, so the ceiling does not affect normal operation.</li>
+              <li><strong>gRPC binding:</strong> Not affected &mdash; this change is HTTP-only. gRPC has its own message-size defaults and remains a separate hardening item.</li>
+              <li><strong>Status-code contract:</strong> Clients receive 413 (with <code>limit_bytes</code>) instead of an unhandled memory error; this is a clearer, safer failure mode.</li>
+            </ul>
+          </div>
+
+          <div class="callout callout-info">
+            <strong>No unrelated refactors.</strong> Only the request-size guard was added. No dependencies, algorithms, or deployment files were modified.
+          </div>
+        </div>
+      </section>
+      <footer class="site-footer">
+        <div class="wrap"><p>MSc Computer Science &mdash; Secure Software Development &middot; University of Essex Online &middot; October 2026.</p></div>
+      </footer>
+    </main>
+  </div>
+  <script src="../assets/scripts/main.js"></script>
+</body>
+</html>
+
