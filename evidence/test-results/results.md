@@ -2,7 +2,7 @@
 
 **Repository:** `fastest_path_backend`
 **Commit:** `90a50769c4c2013f8e2f7d0241d883cc7b3befd2` (origin/main)
-**Date audited:** 22 October 2026
+**Date audited:** 21 October 2026 (test runs captured 22 October 2026)
 **Environment:** Python 3.12.10 (win32), pytest 9.1.1
 **Installed dependencies:** grpcio 1.78.0, grpcio-tools 1.78.0, neo4j 6.1.0, numba 0.64.0, numpy 2.4.3, pandas 3.0.1, protobuf 6.33.6, python-dotenv 1.2.2
 
@@ -10,7 +10,7 @@
 
 Command: `python -m pytest tests/test_smoke.py -q`
 
-Result: **26 passed** in 3.20s
+Result: **26 passed** in 2.84s
 
 All existing algorithm smoke tests (RAPTOR, Dijkstra, A*, HTTP origin/destination resolution, transfer caps, adaptive expansion) passed.
 
@@ -18,9 +18,11 @@ All existing algorithm smoke tests (RAPTOR, Dijkstra, A*, HTTP origin/destinatio
 
 Command: `python -m pytest tests/test_smoke.py tests/test_request_limits.py -q`
 
-Result: **32 passed** in 2.78s
+Result: **32 passed** in 2.79s
 - 26 existing smoke tests: pass (no regression)
 - 6 new request-limit tests: pass
+
+Both runs above are captured verbatim in `pytest-results.txt`; the timings quoted here are taken from that file.
 
 ## 3. New regression tests (`tests/test_request_limits.py`)
 

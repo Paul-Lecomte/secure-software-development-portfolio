@@ -1,3 +1,49 @@
+Raw pytest output for the request-body size ceiling (MAX_REQUEST_BODY_BYTES).
+Repository: fastest_path_backend @ 90a50769c4c2013f8e2f7d0241d883cc7b3befd2
+Python 3.12.10 (win32) | pytest 9.1.1 | Windows
+Encoding: UTF-8
+
+==============================================================================
+BASELINE — tests/test_smoke.py (pre-fix behaviour, no size limit in place)
+==============================================================================
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.7.0 -- C:\Users\lecom\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\lecom\audit-work\backend
+collecting ... collected 26 items
+
+tests/test_smoke.py::test_smoke_mock_network PASSED                      [  3%]
+tests/test_smoke.py::test_smoke_mock_network_dijkstra PASSED             [  7%]
+tests/test_smoke.py::test_smoke_mock_network_astar PASSED                [ 11%]
+tests/test_smoke.py::test_multi_departure_response_offsets PASSED        [ 15%]
+tests/test_smoke.py::test_http_multi_start_selects_fastest_path PASSED   [ 19%]
+tests/test_smoke.py::test_http_segments_include_stop_coordinates PASSED  [ 23%]
+tests/test_smoke.py::test_transfer_segment_includes_walking_geometry PASSED [ 26%]
+tests/test_smoke.py::test_http_origin_destination_includes_access_and_egress_walk_segments PASSED [ 30%]
+tests/test_smoke.py::test_http_departure_parses_numeric_string_timestamp PASSED [ 34%]
+tests/test_smoke.py::test_http_raptor_returns_no_path_when_schedule_unavailable PASSED [ 38%]
+tests/test_smoke.py::test_origin_selects_candidate_starts_and_penalties PASSED [ 42%]
+tests/test_smoke.py::test_http_origin_route_without_explicit_start_ids PASSED [ 46%]
+tests/test_smoke.py::test_http_destination_selects_candidate_ends_and_penalties PASSED [ 50%]
+tests/test_smoke.py::test_http_origin_and_destination_route_without_explicit_stop_ids PASSED [ 53%]
+tests/test_smoke.py::test_get_start_stop_ids_prefers_repeated_field PASSED [ 57%]
+tests/test_smoke.py::test_resolve_stop_query_exact_stop_id PASSED        [ 61%]
+tests/test_smoke.py::test_resolve_stop_query_fuzzy_with_stop_names PASSED [ 65%]
+tests/test_smoke.py::test_resolve_stop_query_returns_none_for_unknown PASSED [ 69%]
+tests/test_smoke.py::test_parallel_multi_start_selects_fastest_path PASSED [ 73%]
+tests/test_smoke.py::test_raptor_handles_long_transfer_chain PASSED      [ 76%]
+tests/test_smoke.py::test_raptor_option_exposes_resolver_metadata PASSED [ 80%]
+tests/test_smoke.py::test_raptor_prefers_train_over_bus_when_weighted_cost_is_lower PASSED [ 84%]
+tests/test_smoke.py::test_raptor_prefers_shuttle_bus_over_short_walk_shortcut PASSED [ 88%]
+tests/test_smoke.py::test_transfer_cap_rejects_high_transfer_path PASSED [ 92%]
+tests/test_smoke.py::test_raptor_option_exposes_diagnostics_on_no_path PASSED [ 96%]
+tests/test_smoke.py::test_raptor_adaptive_destination_expansion_finds_path PASSED [100%]
+
+============================= 26 passed in 2.84s ==============================
+
+==============================================================================
+AFTER FIX — tests/test_smoke.py + tests/test_request_limits.py
+==============================================================================
 ============================= test session starts =============================
 platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.7.0 -- C:\Users\lecom\AppData\Local\Programs\Python\Python312\python.exe
 cachedir: .pytest_cache
@@ -37,4 +83,4 @@ tests/test_request_limits.py::test_body_at_limit_accepted PASSED         [ 93%]
 tests/test_request_limits.py::test_negative_content_length_rejected PASSED [ 96%]
 tests/test_request_limits.py::test_invalid_content_length_rejected PASSED [100%]
 
-============================= 32 passed in 2.75s ==============================
+============================= 32 passed in 2.79s ==============================
