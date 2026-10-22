@@ -85,6 +85,13 @@ strong { color: var(--color-ink); }
 .hero .lead { color: var(--color-body); font-size: 1.05rem; max-width: 62ch; }
 .content { padding: 2rem 1.5rem 4rem; }
 .content > h2:first-child { margin-top: 0; }
+/* Every full-width section applies the page gutter exactly once, on the section
+   itself. The inner `.wrap` must not add a second one: the duplicated 24px
+   inset squeezed tables into a narrow column and pushed the hero and footer
+   text out of line with the header and content gutter. */
+.content > .wrap,
+.hero > .wrap,
+.site-footer > .wrap { padding-left: 0; padding-right: 0; }
 .section-card { border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1.5rem; margin: 1.5rem 0; background: var(--color-bg); }
 /* min() lets the track shrink below 260px when the viewport is narrower,
    otherwise the grid would force the page to scroll sideways. */
