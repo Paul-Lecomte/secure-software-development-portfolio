@@ -38,8 +38,10 @@ ROOT_FILES = [
 # Directories published wholesale (every file beneath them).
 ROOT_DIRS = [
     "assets",
+    "assignments",
     "docs",
     "discussions",
+    "modules",
     "professional-development",
 ]
 

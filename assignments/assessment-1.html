@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Assessment 1 &mdash; Security risk identification &mdash; Secure Software Development e-Portfolio</title>
+  <meta name="description" content="Assessment 1 of the Secure Software Development module: Identify, assess and prioritise the security risks in the systems in scope, and justify each finding against the audited source code.">
+  <link rel="stylesheet" href="../assets/styles/main.css">
+  <link rel="icon" href="../assets/diagrams/favicon.svg">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="page">
+<aside class="nav-wrap" id="navWrap">
+      <div class="nav-inner">
+        <a href="../index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>
+        <div class="nav-section-title">Modules</div>
+        <ul class="nav-list">
+          <li><a href="../index.html">Portfolio home</a></li>
+          <li><a href="../modules/secure-software-development/index.html">Secure Software Development</a></li>
+          <li><a href="../modules/object-oriented-programming/index.html">Object Oriented Programming</a></li>
+          <li><a href="../modules/security-risk-management/index.html">Security Risk Management</a></li>
+          <li><a href="../modules/software-engineering-project-management/index.html">Software Engineering Project Management</a></li>
+          <li><a href="../modules/research-methods-and-professional-practice/index.html">Research Methods &amp; Professional Practice</a></li>
+        </ul>
+        <div class="nav-section-title">Assignments &mdash; Secure Software Development</div>
+        <ul class="nav-list">
+          <li><a href="../assignments/assessment-1.html" class="active">Assessment 1 — security risks</a></li>
+          <li><a href="../assignments/assessment-2.html">Assessment 2 — critical analysis</a></li>
+          <li><a href="../assignments/assessment-3.html">Assessment 3 — secure design</a></li>
+          <li><a href="../assignments/assessment-4.html">Assessment 4 — professional practice</a></li>
+        </ul>
+        <div class="nav-section-title">Assessment artefacts</div>
+        <ul class="nav-list">
+          <li><a href="../docs/learning-outcomes.html">Learning outcomes</a></li>
+          <li><a href="../docs/system-overview.html">System overview</a></li>
+          <li><a href="../docs/threat-model.html">Threat model</a></li>
+          <li><a href="../docs/risk-assessment.html">Risk register</a></li>
+          <li><a href="../docs/secure-design.html">Secure design</a></li>
+          <li><a href="../docs/implementation.html">Implementation</a></li>
+          <li><a href="../docs/security-testing.html">Security testing</a></li>
+          <li><a href="../docs/critical-evaluation.html">Critical evaluation</a></li>
+          <li><a href="../docs/references.html">References</a></li>
+        </ul>
+        <div class="nav-section-title">Collaboration</div>
+        <ul class="nav-list">
+          <li><a href="../discussions/discussion-summary-1.html">Discussion summary 1</a></li>
+          <li><a href="../discussions/discussion-summary-2.html">Discussion summary 2</a></li>
+        </ul>
+        <div class="nav-section-title">Professional development</div>
+        <ul class="nav-list">
+          <li><a href="../professional-development/reflection.html">Reflection</a></li>
+          <li><a href="../professional-development/meeting-notes.html">Meeting notes</a></li>
+          <li><a href="../professional-development/peer-and-tutor-feedback.html">Peer &amp; tutor feedback</a></li>
+          <li><a href="../professional-development/professional-skills-matrix.html">Skills matrix</a></li>
+          <li><a href="../professional-development/personal-development-plan.html">Personal development plan</a></li>
+        </ul>
+        <div class="nav-section-title">Evidence</div>
+        <ul class="nav-list">
+          <li><a href="../evidence/README.html">Evidence index</a></li>
+          <li><a href="../evidence/test-results/index.html">Test results</a></li>
+        </ul>
+        <div class="nav-section-title">Repositories</div>
+        <ul class="nav-list">
+          <li><a href="https://github.com/Paul-Lecomte/fastest_path_backend" target="_blank" rel="noopener">Python backend (GitHub)</a></li>
+          <li><a href="https://github.com/Paul-Lecomte/swiss-pb-map" target="_blank" rel="noopener">SwissTransitMap (GitHub)</a></li>
+        </ul>
+      </div>
+    </aside>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navWrap">&#9776;</button>
+    <main class="main" id="main" tabindex="-1">
+      <header class="site-header">
+        <div class="wrap">
+          <h1>Assessment 1 &mdash; Security risk identification</h1>
+          <div class="meta">LO1 &middot; system scope, STRIDE threat model and risk register</div>
+        </div>
+      </header>
+      <section class="content">
+        <div class="wrap">
+          <div class="assignment-header">
+            <div>
+              <h2>Assessment 1 &mdash; Security risk identification</h2>
+              <p>Identify, assess and prioritise the security risks in the systems in scope, and justify each finding against the audited source code.</p>
+            </div>
+            <div class="assignment-facts">
+              <span class="status status-ok">Complete</span>
+              <span class="status status-info">LO1</span>
+            </div>
+          </div>
+          <div class="callout callout-info">
+            The findings are drawn from a source-level audit of two repositories pinned to specific commits. Every line reference is machine-verified against those commits by <code>tools/verify_references.py</code>, so a reviewer can reproduce each claim.
+          </div>
+          <h2>Assessment</h2>
+          <ul class="strand-list">
+            <li>
+              <div class="strand">
+                <h3>System overview <span class="status status-ok">Complete</span></h3>
+                <p>Scope, architecture, assets, data flows, trust boundaries and the exposed attack surface.</p>
+                <ul>
+                  <li>Architecture and deployment context</li>
+                  <li>Assets and entry points</li>
+                  <li>Trust boundaries and attack surface</li>
+                </ul>
+                <a class="btn btn-outline" href="../docs/system-overview.html">Open system overview</a>
+              </div>
+            </li>
+            <li>
+              <div class="strand">
+                <h3>Threat model (STRIDE) <span class="status status-ok">Complete</span></h3>
+                <p>Assets, threat actors and trust boundaries analysed with STRIDE, with each threat classified.</p>
+                <ul>
+                  <li>Trust boundaries and threat actors</li>
+                  <li>STRIDE table with classification</li>
+                  <li>Explanation of the classification scheme</li>
+                </ul>
+                <a class="btn btn-outline" href="../docs/threat-model.html">Open threat model</a>
+              </div>
+            </li>
+            <li>
+              <div class="strand">
+                <h3>Risk register <span class="status status-ok">Complete</span></h3>
+                <p>Prioritised register with likelihood, impact and rationale, recommended mitigations and residual risk.</p>
+                <ul>
+                  <li>Likelihood and impact rationale</li>
+                  <li>Recommended mitigations</li>
+                  <li>Residual risks after mitigation</li>
+                </ul>
+                <a class="btn btn-outline" href="../docs/risk-assessment.html">Open risk register</a>
+              </div>
+            </li>
+          </ul>
+          <h2>Collaboration</h2>
+          <ul class="strand-list">
+            <li>
+              <div class="strand">
+                <h3>Discussion summary 1 <span class="status status-warn">Template</span></h3>
+                <p>Structured summary of the first discussion-forum thread: perspectives, my contribution and lessons learned.</p>
+                <ul>
+                  <li>No discussion posts supplied yet &mdash; the page is an unpopulated template</li>
+                  <li>Requires genuine forum participation before submission</li>
+                </ul>
+                <a class="btn btn-outline" href="../discussions/discussion-summary-1.html">Open discussion summary 1</a>
+              </div>
+            </li>
+            <li>
+              <div class="strand">
+                <h3>Meeting notes <span class="status status-warn">Template</span></h3>
+                <p>Template for recording team or supervisor meetings, with attendees, decisions and actions.</p>
+                <ul>
+                  <li>Awaiting genuine meeting records</li>
+                  <li>Marked as template because the work was carried out individually</li>
+                </ul>
+                <a class="btn btn-outline" href="../professional-development/meeting-notes.html">Open meeting notes</a>
+              </div>
+            </li>
+          </ul>
+          <h2>Professional development</h2>
+          <ul class="strand-list">
+            <li>
+              <div class="strand">
+                <h3>Professional skills matrix <span class="status status-ok">Complete</span></h3>
+                <p>Self-assessment of the professional and technical skills exercised by this assignment, with supporting evidence.</p>
+                <ul>
+                  <li>Risk-analysis, requirements and research skills</li>
+                  <li>Evidence cited for each rating</li>
+                </ul>
+                <a class="btn btn-outline" href="../professional-development/professional-skills-matrix.html">Open skills matrix</a>
+              </div>
+            </li>
+            <li>
+              <div class="strand">
+                <h3>Personal development plan <span class="status status-ok">Complete</span></h3>
+                <p>How this assignment feeds the objectives and targets recorded in the personal development plan.</p>
+                <ul>
+                  <li>Objectives and target dates</li>
+                  <li>Actions arising from this assignment</li>
+                </ul>
+                <a class="btn btn-outline" href="../professional-development/personal-development-plan.html">Open personal development plan</a>
+              </div>
+            </li>
+          </ul>
+          <h2>Evidence</h2>
+          <ul class="strand-list">
+            <li>
+              <div class="strand">
+                <h3>Evidence index <span class="status status-ok">Complete</span></h3>
+                <p>Reproducible artefacts backing the findings: audited commits, test output and the audit method.</p>
+                <ul>
+                  <li>Audited repository commits</li>
+                  <li>Machine-verified source references</li>
+                </ul>
+                <a class="btn btn-outline" href="../evidence/README.html">Open evidence index</a>
+              </div>
+            </li>
+          </ul>
+          <h2>Learning-outcome coverage</h2>
+          <div class="table-wrap">
+            <table>
+              <tr><th>Outcome</th><th>Covered by</th><th>Status</th></tr>
+              <tr><td>LO1 &mdash; Identify and manage security risks</td><td>System overview, threat model, risk register</td><td><span class="status status-ok">Complete</span></td></tr>
+              <tr><td>LO2 &mdash; Critically analyse development problems</td><td>Discussion summary 1, references</td><td><span class="status status-warn">Partly &mdash; template pending</span></td></tr>
+              <tr><td>LO4 &mdash; Professional and collaborative skills</td><td>Skills matrix, personal development plan</td><td><span class="status status-warn">Partly &mdash; templates pending</span></td></tr>
+            </table>
+          </div>
+          <p><a href="../docs/learning-outcomes.html">See the full learning-outcome mapping &rarr;</a></p>
+          <h2>Other assignments</h2>
+          <ul class="artefact-list">
+            <li><a href="../assignments/assessment-2.html">Assessment 2 &mdash; Critical analysis of development methodologies<span>Critically evaluate the security development methodologies, tools and alternative strategies available to a security engineer, and justify the choices made in this portfolio.</span></a></li>
+            <li><a href="../assignments/assessment-3.html">Assessment 3 &mdash; Secure design and implementation<span>Apply the identified risks to produce a secure design, implement the corresponding controls, and demonstrate their effectiveness with documented testing.</span></a></li>
+            <li><a href="../assignments/assessment-4.html">Assessment 4 &mdash; Professional practice and development<span>Demonstrate professional practice through reflection on the work undertaken, an honest account of the feedback received, and a personal development plan that carries the learning forward.</span></a></li>
+          </ul>
+        </div>
+      </section>
+<footer class="site-footer">
+        <div class="wrap"><p>MSc Computer Science &mdash; Secure Software Development &middot; University of Essex Online &middot; October 2026.</p></div>
+      </footer>
+    </main>
+  </div>
+  <script src="../assets/scripts/main.js"></script>
+</body>
+</html>

@@ -15,9 +15,17 @@
     <aside class="nav-wrap" id="navWrap">
       <div class="nav-inner">
         <a href="index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>
-        <div class="nav-section-title">Assessment</div>
+        <div class="nav-section-title">Modules</div>
         <ul class="nav-list">
-          <li><a href="index.html">Home &amp; audit summary</a></li>
+          <li><a href="index.html" class="active">Portfolio home</a></li>
+          <li><a href="modules/secure-software-development/index.html">Secure Software Development</a></li>
+          <li><a href="modules/object-oriented-programming/index.html">Object Oriented Programming</a></li>
+          <li><a href="modules/security-risk-management/index.html">Security Risk Management</a></li>
+          <li><a href="modules/software-engineering-project-management/index.html">Software Engineering Project Management</a></li>
+          <li><a href="modules/research-methods-and-professional-practice/index.html">Research Methods &amp; Professional Practice</a></li>
+        </ul>
+        <div class="nav-section-title">Assessment artefacts</div>
+        <ul class="nav-list">
           <li><a href="docs/learning-outcomes.html">Learning outcomes</a></li>
           <li><a href="docs/system-overview.html">System overview</a></li>
           <li><a href="docs/threat-model.html">Threat model</a></li>
@@ -37,13 +45,17 @@
         <ul class="nav-list">
           <li><a href="professional-development/reflection.html">Reflection</a></li>
           <li><a href="professional-development/meeting-notes.html">Meeting notes</a></li>
-          <li><a href="professional-development/peer-and-tutor-feedback.html">Feedback</a></li>
+          <li><a href="professional-development/peer-and-tutor-feedback.html">Peer &amp; tutor feedback</a></li>
           <li><a href="professional-development/professional-skills-matrix.html">Skills matrix</a></li>
-          <li><a href="professional-development/personal-development-plan.html">PDP</a></li>
+          <li><a href="professional-development/personal-development-plan.html">Personal development plan</a></li>
         </ul>
         <div class="nav-section-title">Evidence</div>
         <ul class="nav-list">
           <li><a href="evidence/README.html">Evidence index</a></li>
+          <li><a href="evidence/test-results/index.html">Test results</a></li>
+        </ul>
+        <div class="nav-section-title">Repositories</div>
+        <ul class="nav-list">
           <li><a href="https://github.com/Paul-Lecomte/fastest_path_backend" target="_blank" rel="noopener">Python backend (GitHub)</a></li>
           <li><a href="https://github.com/Paul-Lecomte/swiss-pb-map" target="_blank" rel="noopener">SwissTransitMap (GitHub)</a></li>
         </ul>
@@ -59,33 +71,45 @@
         </div>
       </header>
 
-      <section class="hero">
-        <div class="wrap">
-          <h1>Secure Software Development e-Portfolio</h1>
-          <p class="lead">A security-assessed case study of a Python transit-routing backend (RAPTOR pathfinding, gRPC + HTTP, Neo4j) and its supporting full-stack system, SwissTransitMap. Built as summative assessment evidence for the Secure Software Development module.</p>
-          <div class="card-grid" style="margin-top:1.5rem;">
-            <div class="card">
-              <h4>Technical case study</h4>
-              <p>Python routing backend: HTTP request parsing, gRPC service, Neo4j access, environment configuration, input bounds, caching, exception handling, logging, dependencies, tests, Docker/CI.</p>
-            </div>
-            <div class="card">
-              <h4>Security audit</h4>
-              <p>STRIDE threat model, risk register, source-level observations with file/line references, confirmed vs. potential findings, recommended mitigations.</p>
-            </div>
-            <div class="card">
-              <h4>Implemented improvement</h4>
-              <p>Request-body size ceiling (1 MiB) on the HTTP <code>/path</code> endpoint with 413 response and regression tests.</p>
-            </div>
-            <div class="card">
-              <h4>Professional development</h4>
-              <p>Reflection, skills matrix, PDP, meeting-note and feedback templates (missing evidence transparently flagged).</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section class="content">
         <div class="wrap">
+          <h2>Modules</h2>
+          <p>Your e-portfolio is organised by MSc module. Select a module to see its assignments and artefacts.</p>
+          <div class="module-grid">
+            <div class="module-card">
+              <h4>Secure Software Development</h4>
+              <p>Security risk identification, critical analysis, secure design and implementation, professional practice.</p>
+              <span class="badge">4 assignments</span>
+              <a class="btn" href="modules/secure-software-development/index.html">Open module &rarr;</a>
+            </div>
+            <div class="module-card">
+              <h4>Object Oriented Programming</h4>
+              <p>Object-oriented design principles, design patterns, and OOP implementation.</p>
+              <span class="badge">No assignments yet</span>
+              <a class="btn" href="modules/object-oriented-programming/index.html">Open module &rarr;</a>
+            </div>
+            <div class="module-card">
+              <h4>Security Risk Management</h4>
+              <p>Risk identification, assessment, treatment, and monitoring frameworks.</p>
+              <span class="badge">No assignments yet</span>
+              <a class="btn" href="modules/security-risk-management/index.html">Open module &rarr;</a>
+            </div>
+            <div class="module-card">
+              <h4>Software Engineering Project Management</h4>
+              <p>Project planning, Agile/Scrum, estimation, and delivery management.</p>
+              <span class="badge">No assignments yet</span>
+              <a class="btn" href="modules/software-engineering-project-management/index.html">Open module &rarr;</a>
+            </div>
+            <div class="module-card">
+              <h4>Research Methods &amp; Professional Practice</h4>
+              <p>Research methodology, ethics, professional conduct, and development planning.</p>
+              <span class="badge">No assignments yet</span>
+              <a class="btn" href="modules/research-methods-and-professional-practice/index.html">Open module &rarr;</a>
+            </div>
+          </div>
+          <div class="callout callout-info">
+            <strong>How to read this portfolio.</strong> Each module page lists its assignments. Inside each assignment, artefacts are grouped into four strands: <strong>Assessment</strong>, <strong>Collaboration</strong>, <strong>Professional Development</strong>, and <strong>Evidence</strong>. Where genuine evidence has not yet been supplied, the page shows an unpopulated template, flagged as such &mdash; in line with the requirement not to fabricate collaboration.
+          </div>
           <h2>Audit summary</h2>
           <div class="section-card">
             <p><strong>Repositories inspected:</strong></p>
@@ -98,14 +122,6 @@
 
           <div class="callout callout-info">
             <strong>How to read this portfolio.</strong> The <cite>docs/</cite> section contains the assessed artefacts: learning-outcome mapping, system overview, threat model, risk register, secure design, implementation notes, security-testing results, and critical evaluation. The <cite>discussions/</cite> and <cite>professional-development/</cite> sections contain structured <em>templates</em> for collaborative discussion summaries, reflection, meeting notes, feedback, skills matrix and PDP &mdash; these are intentionally unpopulated where genuine evidence (discussion posts, peer/tutor feedback, meeting attendance) has not yet been supplied, in line with the requirement not to fabricate collaboration.
-          </div>
-
-          <h2>Quick navigation</h2>
-          <div class="card-grid">
-            <div class="card"><h4>Learning outcomes</h4><p>Explicit mapping of all evidence to LO1&ndash;LO4.</p><a class="btn btn-outline" href="docs/learning-outcomes.html">View</a></div>
-            <div class="card"><h4>Threat model &amp; risk</h4><p>STRIDE model, attack surfaces, prioritised risk register.</p><a class="btn btn-outline" href="docs/threat-model.html">View</a></div>
-            <div class="card"><h4>Security testing</h4><p>Test baseline, implemented fix, actual results, before/after comparison.</p><a class="btn btn-outline" href="docs/security-testing.html">View</a></div>
-            <div class="card"><h4>Professional development</h4><p>Reflection, skills matrix, PDP, feedback templates.</p><a class="btn btn-outline" href="professional-development/reflection.html">View</a></div>
           </div>
         </div>
       </section>
