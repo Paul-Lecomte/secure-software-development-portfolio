@@ -1,0 +1,14 @@
+@(
+  "Foundations"
+  "Security principles"
+  "Threat modeling"
+  "Risk assessment"
+  "Secure design"
+  "Secure implementation"
+  "Security testing"
+  "Code review"
+  "Secure deployment"
+  "Incident response"
+  "Secure operations"
+  "Professional practice"
+)

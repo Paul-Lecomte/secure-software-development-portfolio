@@ -1,244 +1,85 @@
-"""
-update_nav.py — regenerate the site navigation in every HTML page.
-
-The portfolio is organised by MSc MODULE first, then by ASSIGNMENT within
-each module. Every page exposes the same navigation structure so a reader can
-move between modules and their assignments, whichever page they arrive from.
-
-Navigation order on every page:
-  1. Modules          — all 5 MSc modules
-  2. Assignments      — assignments for the current module (context-dependent)
-  3. Assessment artefacts
-  4. Collaboration
-  5. Professional development
-  6. Evidence
-  7. Repositories (external)
-
-The navigation is generated here (rather than hand-written in 20+ files) so
-the link graph cannot drift: every page gets the same targets, with paths
-rewritten relative to that page's depth.
-
-Run:  python tools/update_nav.py          (rewrite every page)
-      python tools/update_nav.py --check   (report pages that are out of date)
-Exit code 0 = navigation is up to date, 1 = drift found.
-"""
 from __future__ import annotations
-
-import re
-import sys
+import re,sys
 from pathlib import Path
-
-ROOT = Path(__file__).resolve().parent.parent
-
-SKIP_DIRS = {".git", ".github", "_site", "_site_test", "tools", "node_modules", "__pycache__"}
-
-# (label, target path relative to the site root)
-MODULES: list[tuple[str, str]] = [
-    ("Portfolio home", "index.html"),
-    ("Secure Software Development", "modules/secure-software-development/index.html"),
-    ("Object Oriented Programming", "modules/object-oriented-programming/index.html"),
-    ("Security Risk Management", "modules/security-risk-management/index.html"),
-    ("Software Engineering Project Management", "modules/software-engineering-project-management/index.html"),
-    ("Research Methods &amp; Professional Practice", "modules/research-methods-and-professional-practice/index.html"),
-]
-
-# Module slug -> list of (label, target path)
-MODULE_ASSIGNMENTS: dict[str, list[tuple[str, str]]] = {
-    "secure-software-development": [
-        ("Assessment 1 — security risks", "assignments/assessment-1.html"),
-        ("Assessment 2 — critical analysis", "assignments/assessment-2.html"),
-        ("Assessment 3 — secure design", "assignments/assessment-3.html"),
-        ("Assessment 4 — professional practice", "assignments/assessment-4.html"),
-    ],
-    "object-oriented-programming": [],
-    "security-risk-management": [],
-    "software-engineering-project-management": [],
-    "research-methods-and-professional-practice": [],
-}
-
-# Map a page's relative path to the module slug it belongs to.
-def module_for(doc_rel: str) -> str | None:
-    """Return the module slug for a document, or None if it is the homepage."""
-    if doc_rel == "index.html":
-        return None
-    if doc_rel.startswith("modules/"):
-        parts = doc_rel.split("/")
-        if len(parts) >= 2:
-            return parts[1]
-    if doc_rel.startswith("assignments/"):
-        return "secure-software-development"
-    if doc_rel.startswith(("docs/", "discussions/", "professional-development/", "evidence/")):
-        return "secure-software-development"
-    return None
-
-# (section title, [(label, target path relative to the site root), ...])
-ARTEFACT_SECTIONS: list[tuple[str, list[tuple[str, str]]]] = [
-    (
-        "Assessment artefacts",
-        [
-            ("Learning outcomes", "docs/learning-outcomes.html"),
-            ("System overview", "docs/system-overview.html"),
-            ("Threat model", "docs/threat-model.html"),
-            ("Risk register", "docs/risk-assessment.html"),
-            ("Secure design", "docs/secure-design.html"),
-            ("Implementation", "docs/implementation.html"),
-            ("Security testing", "docs/security-testing.html"),
-            ("Critical evaluation", "docs/critical-evaluation.html"),
-            ("References", "docs/references.html"),
-        ],
-    ),
-    (
-        "Collaboration",
-        [
-            ("Discussion summary 1", "discussions/discussion-summary-1.html"),
-            ("Discussion summary 2", "discussions/discussion-summary-2.html"),
-        ],
-    ),
-    (
-        "Professional development",
-        [
-            ("Reflection", "professional-development/reflection.html"),
-            ("Meeting notes", "professional-development/meeting-notes.html"),
-            ("Peer &amp; tutor feedback", "professional-development/peer-and-tutor-feedback.html"),
-            ("Skills matrix", "professional-development/professional-skills-matrix.html"),
-            ("Personal development plan", "professional-development/personal-development-plan.html"),
-        ],
-    ),
-    (
-        "Evidence",
-        [
-            ("Evidence index", "evidence/README.html"),
-            ("Test results", "evidence/test-results/index.html"),
-        ],
-    ),
-]
-
-# External links live under their own section, after the internal ones.
-EXTERNAL_LINKS: list[tuple[str, str]] = [
-    ("Python backend (GitHub)", "https://github.com/Paul-Lecomte/fastest_path_backend"),
-    ("SwissTransitMap (GitHub)", "https://github.com/Paul-Lecomte/swiss-pb-map"),
-]
-
-ASIDE_RE = re.compile(
-    r'<aside class="nav-wrap" id="navWrap">.*?</aside>', re.DOTALL
-)
-
-
-def html_files() -> list[Path]:
-    """Every authored HTML page, excluding tooling and build artefacts."""
-    found: list[Path] = []
-    for path in ROOT.rglob("*.html"):
-        rel = path.relative_to(ROOT).parts
-        if SKIP_DIRS.intersection(rel):
-            continue
-        found.append(path)
-    return sorted(found)
-
-
-def prefix_for(doc: Path) -> str:
-    """Relative path prefix from a document back to the site root."""
-    depth = len(doc.relative_to(ROOT).parts) - 1
-    return "../" * depth
-
-
-def build_nav(doc: Path) -> str:
-    """Render the navigation block for a document at the given depth."""
-    prefix = prefix_for(doc)
-    here = doc.relative_to(ROOT).as_posix()
-    current_module = module_for(here)
-
-    lines: list[str] = [
-        '<aside class="nav-wrap" id="navWrap">',
-        '      <div class="nav-inner">',
-        f'        <a href="{prefix}index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>',
-    ]
-
-    # --- 1. Modules ---
-    lines.append('        <div class="nav-section-title">Modules</div>')
-    lines.append('        <ul class="nav-list">')
-    for label, target in MODULES:
-        href = target if target.startswith("http") else prefix + target
-        active = ' class="active"' if target == here else ""
-        lines.append(f'          <li><a href="{href}"{active}>{label}</a></li>')
-    lines.append("        </ul>")
-
-    # --- 2. Assignments for the current module ---
-    if current_module and current_module in MODULE_ASSIGNMENTS:
-        assignments = MODULE_ASSIGNMENTS[current_module]
-        section_title = f"Assignments &mdash; {current_module.replace('-', ' ').title()}"
-        lines.append(f'        <div class="nav-section-title">{section_title}</div>')
-        lines.append('        <ul class="nav-list">')
-        if assignments:
-            for label, target in assignments:
-                href = target if target.startswith("http") else prefix + target
-                active = ' class="active"' if target == here else ""
-                lines.append(f'          <li><a href="{href}"{active}>{label}</a></li>')
-        else:
-            lines.append('          <li><span class="badge">No assignments added yet</span></li>')
-        lines.append("        </ul>")
-
-    # --- 3-6. Artefact sections ---
-    for title, items in ARTEFACT_SECTIONS:
-        lines.append(f'        <div class="nav-section-title">{title}</div>')
-        lines.append('        <ul class="nav-list">')
-        for label, target in items:
-            href = target if target.startswith("http") else prefix + target
-            active = ' class="active"' if target == here else ""
-            lines.append(f'          <li><a href="{href}"{active}>{label}</a></li>')
-        lines.append("        </ul>")
-
-    # --- 7. Repositories ---
-    lines.append('        <div class="nav-section-title">Repositories</div>')
-    lines.append('        <ul class="nav-list">')
-    for label, href in EXTERNAL_LINKS:
-        lines.append(
-            f'          <li><a href="{href}" target="_blank" rel="noopener">{label}</a></li>'
-        )
-    lines.append("        </ul>")
-    lines.append("      </div>")
-    lines.append("    </aside>")
-    return "\n".join(lines)
-
-
-def main() -> int:
-    check_only = "--check" in sys.argv[1:]
-    stale: list[str] = []
-    changed = 0
-
-    for doc in html_files():
-        text = doc.read_text(encoding="utf-8")
-        match = ASIDE_RE.search(text)
-        if not match:
-            rel = doc.relative_to(ROOT).as_posix()
-            print(f"  ! no navigation block found in {rel}")
-            stale.append(rel)
-            continue
-
-        new_block = build_nav(doc)
-        if match.group(0) == new_block:
-            continue
-
-        rel = doc.relative_to(ROOT).as_posix()
-        stale.append(rel)
-        if check_only:
-            continue
-
-        updated = text[: match.start()] + new_block + text[match.end() :]
-        doc.write_text(updated, encoding="utf-8")
-        changed += 1
-
-    if check_only:
-        if stale:
-            print(f"{len(stale)} page(s) with out-of-date navigation:")
-            for rel in stale:
-                print(f"  - {rel}")
-            return 1
-        print(f"All pages use the current navigation ({len(html_files())} checked).")
-        return 0
-
-    print(f"Rewrote navigation in {changed} page(s).")
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
+R=Path(__file__).resolve().parent.parent
+S={".git",".github","_site","_site_test","tools","node_modules","__pycache__"}
+M=[("Portfolio home","index.html"),("Secure Software Development","modules/secure-software-development/index.html"),("Object Oriented Programming","modules/object-oriented-programming/index.html"),("Security Risk Management","modules/security-risk-management/index.html"),("Software Engineering Project Management","modules/software-engineering-project-management/index.html"),("Research Methods &amp; Professional Practice","modules/research-methods-and-professional-practice/index.html")]
+U={"secure-software-development":[("Unit 1","modules/secure-software-development/unit-1/index.html"),("Unit 2","modules/secure-software-development/unit-2/index.html"),("Unit 3","modules/secure-software-development/unit-3/index.html"),("Unit 4","modules/secure-software-development/unit-4/index.html"),("Unit 5","modules/secure-software-development/unit-5/index.html"),("Unit 6","modules/secure-software-development/unit-6/index.html"),("Unit 7","modules/secure-software-development/unit-7/index.html"),("Unit 8","modules/secure-software-development/unit-8/index.html"),("Unit 9","modules/secure-software-development/unit-9/index.html"),("Unit 10","modules/secure-software-development/unit-10/index.html"),("Unit 11","modules/secure-software-development/unit-11/index.html"),("Unit 12","modules/secure-software-development/unit-12/index.html")],"object-oriented-programming":[],"security-risk-management":[],"software-engineering-project-management":[],"research-methods-and-professional-practice":[]}
+UA={}
+def lc(x):
+ if x=="index.html":return(None,None)
+ if x.startswith("modules/"):
+  q=x.split("/")
+  if len(q)>=4 and q[2].startswith("unit-"):return(q[1],q[2])
+  if len(q)>=2:return(q[1],None)
+ return(None,None)
+A=[("Assessed work",[("Learning outcomes","docs/learning-outcomes.html"),("System overview","docs/system-overview.html"),("Threat model","docs/threat-model.html"),("Risk register","docs/risk-assessment.html"),("Secure design","docs/secure-design.html"),("Implementation","docs/implementation.html"),("Security testing","docs/security-testing.html"),("Critical evaluation","docs/critical-evaluation.html"),("References","docs/references.html")]),("Collaboration",[("Discussion 1","discussions/discussion-summary-1.html"),("Discussion 2","discussions/discussion-summary-2.html")]),("Professional development",[("Reflection","professional-development/reflection.html"),("Meeting notes","professional-development/meeting-notes.html"),("Peer &amp; tutor feedback","professional-development/peer-and-tutor-feedback.html"),("Skills matrix","professional-development/professional-skills-matrix.html"),("Personal development plan","professional-development/personal-development-plan.html")]),("Evidence",[("Evidence index","evidence/README.html"),("Test results","evidence/test-results/index.html")])]
+X=[("fastest_path_backend","https://github.com/Paul-Lecomte/fastest_path_backend"),("swiss-pb-map","https://github.com/Paul-Lecomte/swiss-pb-map")]
+Z=re.compile(r'<aside class="nav-wrap" id="navWrap">.*?</aside>',re.DOTALL)
+def hf():
+ o=[]
+ for p in R.rglob("*.html"):
+  if S.intersection(p.relative_to(R).parts):continue
+  o.append(p)
+ return sorted(o)
+def pfx(d):return"../"*(len(d.relative_to(R).parts)-1)
+def nv(d):
+ p=pfx(d);h=d.relative_to(R).as_posix();m,u=lc(h)
+ L=['<aside class="nav-wrap" id="navWrap">',' <div class="nav-inner">',f' <a href="{p}index.html" class="nav-brand">Secure<span class="accent">SSD</span> Portfolio</a>',' <div class="nav-section-title">Modules</div>',' <ul class="nav-list">']
+ for l,t in M:
+  hr=t if t.startswith("http")else p+t;a=' class="active"'if t==h else""
+  L.append(f'  <li><a href="{hr}"{a}>{l}</a></li>')
+ L.append(" </ul>")
+ if m and m in U:
+  us=U[m]
+  L.append(f' <div class="nav-section-title">Units &mdash; {m.replace("-"," ").title()}</div>')
+  L.append(' <ul class="nav-list">')
+  if us:
+   for l,t in us:
+    hr=t if t.startswith("http")else p+t;a=' class="active"'if t==h else""
+    L.append(f'  <li><a href="{hr}"{a}>{l}</a></li>')
+  else:L.append('  <li><span class="badge">No units added yet</span></li>')
+  L.append(" </ul>")
+ if u:
+  up=f"modules/{m}/{u}/index.html";ag=UA.get(up,[])
+  L.append(f' <div class="nav-section-title">Assignments &mdash; {u.replace("-"," ").title()}</div>')
+  L.append(' <ul class="nav-list">')
+  if ag:
+   for l,t in ag:
+    hr=t if t.startswith("http")else p+t;a=' class="active"'if t==h else""
+    L.append(f'  <li><a href="{hr}"{a}>{l}</a></li>')
+  else:L.append('  <li><span class="badge">No assignments added yet</span></li>')
+  L.append(" </ul>")
+ for t,i in A:
+  L.append(f' <div class="nav-section-title">{t}</div>')
+  L.append(' <ul class="nav-list">')
+  for l,t2 in i:
+   hr=t2 if t2.startswith("http")else p+t2;a=' class="active"'if t2==h else""
+   L.append(f'  <li><a href="{hr}"{a}>{l}</a></li>')
+  L.append(" </ul>")
+ L.append(' <div class="nav-section-title">Repositories</div>')
+ L.append(' <ul class="nav-list">')
+ for l,hr in X:L.append(f'  <li><a href="{hr}" target="_blank" rel="noopener">{l}</a></li>')
+ L.append(" </ul>")
+ L.append(" </div>")
+ L.append("</aside>")
+ return"\n".join(L)
+def main():
+ c="--check"in sys.argv[1:];st,ch=[],0
+ for d in hf():
+  t=d.read_text(encoding="utf-8");z=Z.search(t)
+  if not z:
+   print(f"  ! no nav in {d.relative_to(R).as_posix()}");st.append(d.relative_to(R).as_posix());continue
+  nw=nv(d)
+  if z.group(0)==nw:continue
+  st.append(d.relative_to(R).as_posix())
+  if c:continue
+  d.write_text(t[:z.start()]+nw+t[z.end():],encoding="utf-8");ch+=1
+ if c:
+  if st:
+   print(f"{len(st)} page(s) out of date:");
+   for r in st:print(f"  - {r}")
+   return 1
+  print(f"All pages current ({len(hf())} checked).");return 0
+ print(f"Rewrote navigation in {ch} page(s).");return 0
+if __name__=="__main__":sys.exit(main())

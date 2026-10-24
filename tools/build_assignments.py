@@ -85,14 +85,21 @@ def render_outcomes(assignment: Assignment, prefix: str) -> str:
 
 def render_siblings(assignment: Assignment, prefix: str) -> str:
     """Render links to the other assignments in the hub."""
+    short_desc = {
+        "assessment-1": "Security risks, STRIDE threat model, risk register.",
+        "assessment-2": "Critical analysis of methodologies and tools.",
+        "assessment-3": "Secure design, implementation, security testing.",
+        "assessment-4": "Reflection, feedback, development plan.",
+    }
     out = ["          <h2>Other assignments</h2>", '          <ul class="artefact-list">']
     for other in ASSIGNMENTS:
         if other["slug"] == assignment["slug"]:
             continue
         href = f"{prefix}assignments/{other['slug']}.html"
+        desc = short_desc.get(other["slug"], other["summary"])
         out.append(
             f'            <li><a href="{href}">{other["number"]} &mdash; '
-            f'{other["title"]}<span>{other["summary"]}</span></a></li>'
+            f'{other["title"]}<span>{desc}</span></a></li>'
         )
     out.append("          </ul>")
     return "\n".join(out)

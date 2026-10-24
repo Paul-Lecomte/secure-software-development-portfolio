@@ -1,0 +1,124 @@
+import os
+
+BASE = 'C:/Users/lecom/OneDrive/Images/Essex_University/year_1/module/Secure Software Developement/secure-software-development-portfolio/modules/secure-software-development'
+
+UNITS = [
+    'Foundations',
+    'Security principles',
+    'Threat modeling',
+    'Risk assessment',
+    'Secure design',
+    'Secure implementation',
+    'Security testing',
+    'Code review',
+    'Secure deployment',
+    'Incident response',
+    'Secure operations',
+    'Professional practice',
+]
+
+
+def unit_html(num, name):
+    nav_ul = ''
+    for j in range(1, 13):
+        nav_ul += '          <li><a href="../../modules/secure-software-development/unit-{}/index.html">Unit {}</a></li>\n'.format(j, j)
+    content = '''\n
+# test insert
+import os
+
+BASE = 'C:/Users/lecom/OneDrive/Images/Essex_University/year_1/module/Secure Software Developement/secure-software-development-portfolio/modules/secure-software-development'
+
+UNITS = [
+    'Foundations',
+    'Security principles',
+    'Threat modeling',
+    'Risk assessment',
+    'Secure design',
+    'Secure implementation',
+    'Security testing',
+    'Code review',
+    'Secure deployment',
+    'Incident response',
+    'Secure operations',
+    'Professional practice',
+]
+
+
+def unit_html(num, name):
+    nav_ul = ''
+    for j in range(1, 13):
+        nav_ul += '          <li><a href="../../modules/secure-software-development/unit-{}/index.html">Unit {}</a></li>\n'.format(j, j)
+    content = '''
+﻿import os
+
+BASE = 'C:/Users/lecom/OneDrive/Images/Essex_University/year_1/module/Secure Software Developement/secure-software-development-portfolio/modules/secure-software-development'
+
+UNITS = [
+    'Foundations',
+    'Security principles',
+    'Threat modeling',
+    'Risk assessment',
+    'Secure design',
+    'Secure implementation',
+    'Security testing',
+    'Code review',
+    'Secure deployment',
+    'Incident response',
+    'Secure operations',
+    'Professional practice',
+]
+
+
+def unit_html(num, name):
+    nav_ul = ''
+    for j in range(1, 13):
+        nav_ul += '          <li><a href="../../modules/secure-software-development/unit-{}/index.html">Unit {}</a></li>\n'.format(j, j)
+    content = '''
+
+BASE = 'C:/Users/lecom/OneDrive/Images/Essex_University/year_1/module/Secure Software Developement/secure-software-development-portfolio/modules/secure-software-development'
+
+UNITS = [
+    'Foundations',
+    'Security principles',
+    'Threat modeling',
+    'Risk assessment',
+    'Secure design',
+    'Secure implementation',
+    'Security testing',
+    'Code review',
+    'Secure deployment',
+    'Incident response',
+    'Secure operations',
+    'Professional practice',
+]
+
+
+def unit_html(num, name):
+    nav_ul = ''
+    for j in range(1, 13):
+        nav_ul += '          <li><a href="../../modules/secure-software-development/unit-{}/index.html">Unit {}</a></li>\n'.format(j, j)
+
+
+BASE = 'C:/Users/lecom/OneDrive/Images/Essex_University/year_1/module/Secure Software Developement/secure-software-development-portfolio/modules/secure-software-development'
+
+UNITS = [
+    'Foundations',
+    'Security principles',
+    'Threat modeling',
+    'Risk assessment',
+    'Secure design',
+    'Secure implementation',
+    'Security testing',
+    'Code review',
+    'Secure deployment',
+    'Incident response',
+    'Secure operations',
+    'Professional practice',
+]
+
+
+def unit_html(num, name):
+    nav_ul = ''
+    for j in range(1, 13):
+        nav_ul += '          <li><a href="../../modules/secure-software-development/unit-{}/index.html">Unit {}</a></li>\n'.format(j, j)
+    content = '''\n

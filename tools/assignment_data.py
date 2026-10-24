@@ -64,10 +64,8 @@ ASSESSMENT_1: Assignment = {
     "status_text": "Complete",
     "outcome": "LO1",
     "intro": (
-        "The findings are drawn from a source-level audit of two repositories "
-        "pinned to specific commits. Every line reference is machine-verified "
-        "against those commits by <code>tools/verify_references.py</code>, so a "
-        "reviewer can reproduce each claim."
+        "The findings come from an audit of two repositories pinned to specific commits. "
+        "Line references are checked against those commits with tools/verify_references.py."
     ),
     "strands": [
         (
@@ -211,10 +209,8 @@ ASSESSMENT_2: Assignment = {
     "status_text": "Complete",
     "outcome": "LO2",
     "intro": (
-        "The critical evaluation is grounded in the primary sources cited in "
-        "the reference list, and each recommendation is traced back to a "
-        "concrete finding in the threat model or risk register rather than "
-        "stated in the abstract."
+        "The evaluation is based on the primary sources in the reference list. "
+        "Each recommendation traces back to a finding in the threat model or risk register."
     ),
     "strands": [
         (
@@ -332,10 +328,9 @@ ASSESSMENT_3: Assignment = {
     "status_text": "Complete",
     "outcome": "LO3",
     "intro": (
-        "The controls implemented are traced to the risks they mitigate, and "
-        "each is evidenced by a reproducible test rather than an assertion. "
-        "Where a control could not be implemented in the time available, the "
-        "gap is recorded explicitly in the risk register."
+        "Each control is traced to the risk it mitigates and evidenced by a "
+        "reproducible test rather than an assertion. Controls that could not be "
+        "implemented are noted in the risk register."
     ),
     "strands": [
         (
@@ -477,11 +472,8 @@ ASSESSMENT_4: Assignment = {
     "status_text": "In progress",
     "outcome": "LO4",
     "intro": (
-        "This is the strand the module marks most heavily on professional "
-        "practice, so it is the least complete: the reflection and skills "
-        "matrix are written up, while the peer and tutor feedback and the "
-        "meeting records remain unpopulated templates. The gaps are shown "
-        "below rather than hidden."
+        "Reflection and skills matrix are written up. Peer and tutor feedback "
+        "and meeting records are still empty templates &mdash; I won't make up feedback."
     ),
     "strands": [
         (
