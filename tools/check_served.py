@@ -57,6 +57,7 @@ EXPECTED = [
     "/modules/secure-software-development/unit-11/index.html",
     "/modules/secure-software-development/unit-12/index.html",
     "/modules/secure-software-development/unit-13/index.html",
+    "/modules/secure-software-development/unit-1/misuse-case-diagram.png",
     "/modules/secure-software-development/unit-2/test.txt",
     "/evidence/README.html",
     "/evidence/test-results/index.html",
