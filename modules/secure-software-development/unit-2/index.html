@@ -122,25 +122,40 @@
 
           <div class="section-card">
             <h2>Assignment 2: Peer Critique Responses</h2>
-            <p class="unit-meta">Two critique responses to peer assignments &mdash; <em>To be completed</em></p>
-
-            <div class="callout callout-warn">
-              <strong>Not yet completed.</strong> Two critique responses to peer assignments will be added here once they are available. Each critique will evaluate a peer&rsquo;s work against the assignment criteria, provide constructive feedback, and identify strengths and areas for improvement.
-            </div>
+            <p class="unit-meta">Two critique responses to peer assignments</p>
 
             <h3>Critique Response 1</h3>
-            <p><em>Peer assignment to be reviewed: [Title / Author]</em></p>
-            <p><strong>Status:</strong> <span class="status status-warn">Pending</span></p>
-            <div class="section-card" style="min-height: 150px; opacity: 0.6;">
-              <p><em>Critique content will be added here...</em></p>
-            </div>
+            <p class="unit-meta"><strong>Peer assignment reviewed:</strong> IoT Healthcare: Misuse Case Analysis</p>
+
+            <p>I like how your misuse case diagram highlights realistic threats to remote patient monitoring, particularly data tampering and denial-of-service attacks. You clearly explain how these threats can affect patient privacy, clinical decisions and patient safety. Your proposed controls, including encryption, multifactor authentication and device security, are also relevant to protecting healthcare IoT systems (Li et al., 2024; Fagan et al., 2020).</p>
+
+            <p>One weakness is the focus on external attackers. A malicious insider, such as an employee misusing authorised access or accidentally exposing patient data, could also compromise the system. Adding an insider actor would make the diagram more comprehensive. It would also help to distinguish threats to confidentiality, integrity and availability so their different impacts are clearer.</p>
+
+            <p>The diagram could be improved by linking each misuse case directly to its countermeasure. For example, integrity verification could address data tampering, while resilient infrastructure and local alerts could reduce the impact of denial-of-service attacks. This would make the relationship between threats and safeguards easier to understand.</p>
+
+            <p>Overall, your post provides a strong foundation for security-by-design. How would you balance stronger security controls with the limited battery life and processing capacity of wearable devices?</p>
+
+            <h4>References</h4>
+            <ul>
+              <li>Fagan, M., Megas, K.N., Scarfone, K. and Smith, M. (2020) <em>IoT device cybersecurity capability core baseline</em>. NISTIR 8259A. Gaithersburg, MD: National Institute of Standards and Technology. Available at: <a href="https://doi.org/10.6028/NIST.IR.8259A" target="_blank" rel="noopener">https://doi.org/10.6028/NIST.IR.8259A</a>.</li>
+              <li>Li, C. et al. (2024) &lsquo;A review of IoT applications in healthcare&rsquo;, <em>Neurocomputing</em>, 565, 127017. Available at: <a href="https://doi.org/10.1016/j.neucom.2023.127017" target="_blank" rel="noopener">https://doi.org/10.1016/j.neucom.2023.127017</a>.</li>
+            </ul>
 
             <h3>Critique Response 2</h3>
-            <p><em>Peer assignment to be reviewed: [Title / Author]</em></p>
-            <p><strong>Status:</strong> <span class="status status-warn">Pending</span></p>
-            <div class="section-card" style="min-height: 150px; opacity: 0.6;">
-              <p><em>Critique content will be added here...</em></p>
-            </div>
+            <p class="unit-meta"><strong>Peer assignment reviewed:</strong> Smart University: Misuse Case Analysis</p>
+
+            <p>I like how your diagram connects specific smart university functions, such as Wi-Fi access, attendance monitoring and CCTV, to realistic misuse cases. Including both an external attacker and a malicious insider is particularly effective because each presents different risks. The use of threat and mitigation relationships also makes the security requirements easier to follow (Sindre and Opdahl, 2005).</p>
+
+            <p>One improvement would be to make the phishing mitigation more specific. Your narrative identifies data exfiltration as the countermeasure, but this is actually a possible consequence of a successful phishing attack. The diagram could instead show multifactor authentication to reduce the risk of stolen credentials being misused, alongside email filtering and staff awareness training.</p>
+
+            <p>I would also suggest expanding the attendance spoofing misuse case. For example, an attacker could manipulate sensor data or use a cloned smart card to register attendance fraudulently. Linking this threat to stronger card authentication and sensor-data integrity checks would make the proposed controls clearer. Finally, adding the denial-of-service attack you mention would show how disruption to the VLE or campus Wi-Fi could affect students and staff.</p>
+
+            <p>Overall, your diagram is well structured and relevant to a smart university environment. Which threat would you prioritise first: compromised student credentials, attendance manipulation or CCTV hijacking, and why?</p>
+
+            <h4>References</h4>
+            <ul>
+              <li>Sindre, G. and Opdahl, A.L. (2005) &lsquo;Eliciting security requirements with misuse cases&rsquo;, <em>Requirements Engineering</em>, 10(1), pp. 34&ndash;44. Available at: <a href="https://doi.org/10.1007/s00766-004-0194-4" target="_blank" rel="noopener">https://doi.org/10.1007/s00766-004-0194-4</a>.</li>
+            </ul>
           </div>
         </div>
       </section>
