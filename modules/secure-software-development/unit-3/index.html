@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Unit 3 - Threat Modeling &mdash; SSD &mdash; MSc e-Portfolio</title>
-  <meta name="description" content="SSD unit 3: Threat modeling placeholder.">
+  <title>Unit 3 - Programming Languages: History, Concepts & Design &mdash; SSD &mdash; MSc e-Portfolio</title>
+  <meta name="description" content="SSD unit 3: Programming languages history, concepts and design, including buffer overflow analysis and Python linting.">
   <link rel="stylesheet" href="../../../assets/styles/main.css">
   <link rel="icon" href="../../../assets/diagrams/favicon.svg">
 </head>
@@ -81,7 +81,7 @@
       </header>
       <section class="content">
         <div class="wrap">
-          <p><strong>Unit 3: Threat Modeling</strong></p>
+          <p><strong>Unit 3: Programming Languages: History, Concepts & Design</strong></p>
           <div class="breadcrumb"><a href="../../../index.html">Home</a> &middot; <a href="../../../modules/secure-software-development/index.html">Secure Software Development</a> &middot; Unit 3</div>
 
           <div class="section-card">
@@ -162,6 +162,52 @@
 
             <h3>5. Conclusion</h3>
             <p>This lab demonstrates that unsafe memory handling in statically allocated buffers can easily lead to control-flow corruption. While modern compilers provide built-in mitigation techniques such as stack canaries (<code>/GS</code>), developer best practices (e.g., bounds checking and using safe string functions) remain essential for writing secure software.</p>
+          </div>
+
+          <div class="section-card">
+            <h2>Assignment: Python Pylint Results & Analysis</h2>
+            <p class="unit-meta">Lab Report &mdash; Exploring Python Tools and Features (Part 2)</p>
+
+            <h3>1. What is the result of running Pylint?</h3>
+            <p>Pylint evaluated the file <code>Overflow.py</code> and gave it a score of <strong>0.00/10</strong>, identifying four convention/style violations:</p>
+            <ul>
+              <li><strong>C0103 (Invalid-name):</strong> The module name "Overflow" uses PascalCase instead of Python's standard snake_case naming convention (e.g., <code>overflow.py</code>).</li>
+              <li><strong>C0114 (Missing-module-docstring):</strong> The file lacks a top-level documentation string explaining what the script does.</li>
+              <li><strong>C0303 (Trailing-whitespace):</strong> There are unwanted spaces at the end of a line.</li>
+              <li><strong>C0304 (Missing-final-newline):</strong> The file does not end with a newline character.</li>
+            </ul>
+
+            <h3>2. Does Pylint tell you how to fix the logic/runtime error?</h3>
+            <p>No. Pylint is a static code analysis tool focused on code style, formatting, naming conventions, and common coding smells (following PEP 8). It does not detect the runtime <code>IndexError</code> (out-of-bounds access) that occurs when running the loop <code>(for i in range (0, 11):)</code> on a list of size 10 <code>(buffer = [None] * 10)</code>.</p>
+            <p>To catch runtime errors like index out-of-bounds, you must actually execute the script, where Python raises a safe exception (<code>IndexError: list assignment index out of range</code>).</p>
+
+            <h3>3. Comparative Summary: C vs. Python Memory Handling</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>C (<code>bufoverflow.c</code>)</th>
+                  <th>Python (<code>Overflow.py</code>)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Bounds Checking</strong></td>
+                  <td>None by default. Functions like <code>gets()</code> write blindly to memory.</td>
+                  <td>Enforced. Lists and arrays track their lengths dynamically.</td>
+                </tr>
+                <tr>
+                  <td><strong>Out-of-Bounds Behavior</strong></td>
+                  <td>Memory Corruption / Crash. Overwrites adjacent stack frames (return addresses), leading to segmentation faults or security exploits (buffer overflows).</td>
+                  <td>Controlled Exception. Raises an <code>IndexError</code> immediately, halting execution safely before memory can be corrupted.</td>
+                </tr>
+                <tr>
+                  <td><strong>Static Analysis Role</strong></td>
+                  <td>Compilers/linters flag dangerous functions (like <code>gets</code>), but C relies heavily on developer discipline.</td>
+                  <td>Linters (pylint) catch formatting and style, while Python's interpreter handles runtime safety natively.</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
