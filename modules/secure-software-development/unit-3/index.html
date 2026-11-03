@@ -82,8 +82,87 @@
       <section class="content">
         <div class="wrap">
           <p><strong>Unit 3: Threat Modeling</strong></p>
-          <p>Placeholder page for unit 3. Assignment details, learning outcomes, and evidence will be added here.</p>
           <div class="breadcrumb"><a href="../../../index.html">Home</a> &middot; <a href="../../../modules/secure-software-development/index.html">Secure Software Development</a> &middot; Unit 3</div>
+
+          <div class="section-card">
+            <h2>Assignment: Buffer Overflow Vulnerability and Stack Protection Analysis</h2>
+            <p class="unit-meta">Lab Report &mdash; Exploring Python Tools and Features (Part 1)</p>
+
+            <h3>1. Objective</h3>
+            <p>The purpose of this experiment is to observe the mechanics of a stack-based buffer overflow vulnerability in C/C++, understand how excess input corrupts control flow in un-protected binaries, and verify the effectiveness of compiler-level stack protection mechanisms (<code>/GS</code> stack canary).</p>
+
+            <h3>2. Test Execution & Results</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Test Case</th>
+                  <th>Configuration</th>
+                  <th>Input</th>
+                  <th>Input Length</th>
+                  <th>Expected vs. Observed Outcome</th>
+                  <th>Result</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Test 1</strong></td>
+                  <td>MSVC (No Protection / <code>/GS-</code>)</td>
+                  <td><code>Alex</code></td>
+                  <td>4 chars (&le; 8)</td>
+                  <td>Normal execution; input printed back correctly.</td>
+                  <td><strong>PASS</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>Test 2</strong></td>
+                  <td>MSVC (No Protection / <code>/GS-</code>)</td>
+                  <td><code>AAAAAAAAAA</code></td>
+                  <td>10+ chars (&ge; 10)</td>
+                  <td>Buffer overflow; program crashes with an Access Violation.</td>
+                  <td><strong>FAIL (Vulnerable)</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>Test 3 (Bonus)</strong></td>
+                  <td>MSVC (With Protection / <code>/GS</code>)</td>
+                  <td><code>AAAAAAAAAA</code></td>
+                  <td>10+ chars (&ge; 10)</td>
+                  <td>Abrupt controlled termination; stack canary detects tampering.</td>
+                  <td><strong>PROTECTED</strong></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>3. Analysis & Findings</h3>
+
+            <h4>3.1 Unprotected Execution Analysis (<code>/GS-</code>)</h4>
+            <p>When the program was compiled without stack protection, memory allocation for <code>buf</code> was strictly restricted to 8 bytes on the stack.</p>
+            <ul>
+              <li><strong>Short Input (<code>Alex</code>):</strong> The input fits entirely within the allocated 8-byte array bounds, maintaining stack integrity.</li>
+              <li><strong>Long Input (<code>AAAAAAAAAA</code>):</strong> Input exceeding 8 bytes overflows the boundaries of <code>buf[8]</code>. The extra ASCII characters overwrite adjacent stack memory structures, specifically:
+                <ol>
+                  <li>The <strong>Saved Frame Pointer (EBP/RBP)</strong></li>
+                  <li>The <strong>Return Address (EIP/RIP)</strong></li>
+                </ol>
+              </li>
+            </ul>
+
+            <h4>3.2 Output Explanation</h4>
+            <p>When entering 10+ characters under <code>/GS-</code>, the program fails with an <strong>Access Violation</strong> (or segmentation fault).</p>
+            <ul>
+              <li><strong>Underlying Cause:</strong> The ASCII input character <code>A</code> (hexadecimal <code>0x41</code>) overwrites the saved return address on the stack.</li>
+              <li><strong>Execution Failure:</strong> When <code>main()</code> finishes executing and attempts to return, the CPU pops the corrupted stack memory into the instruction pointer register. The CPU attempts to execute instructions located at the invalid address (e.g., <code>0x4141414141414141</code>). Because this address does not belong to an executable memory page allocated to the process, the operating system halts execution immediately to prevent erratic behavior.</li>
+            </ul>
+
+            <h3>4. Protection Comparison (<code>/GS</code> Stack Canary)</h3>
+            <p>Re-compiling and executing the long input with MSVC's standard stack protection (<code>/GS</code>) changed the outcome significantly:</p>
+            <ul>
+              <li><strong>Mechanism:</strong> The compiler places a randomized security cookie (stack canary) on the stack between local buffers (like <code>buf</code>) and the saved return address.</li>
+              <li><strong>Observation:</strong> Upon entering <code>AAAAAAAAAA</code>, the canary value was overwritten before the return address could be reached.</li>
+              <li><strong>Outcome:</strong> Prior to returning from the function, the compiler's inserted check detected the modified canary and triggered an immediate, controlled termination with a safety message (<code>Stack buffer overflow detected!</code>). This prevented execution from jumping to the corrupted address, mitigating potential arbitrary code execution.</li>
+            </ul>
+
+            <h3>5. Conclusion</h3>
+            <p>This lab demonstrates that unsafe memory handling in statically allocated buffers can easily lead to control-flow corruption. While modern compilers provide built-in mitigation techniques such as stack canaries (<code>/GS</code>), developer best practices (e.g., bounds checking and using safe string functions) remain essential for writing secure software.</p>
+          </div>
         </div>
       </section>
       <footer class="site-footer">
