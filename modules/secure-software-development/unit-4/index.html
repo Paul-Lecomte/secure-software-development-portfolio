@@ -81,8 +81,501 @@
       <section class="content">
         <div class="wrap">
           <p><strong>Unit 4: Exploring Programming Language Concepts</strong></p>
-          <p>Placeholder page for unit 4. Assignment details, learning outcomes, and evidence will be added here.</p>
           <div class="breadcrumb"><a href="../../../index.html">Home</a> &middot; <a href="../../../modules/secure-software-development/index.html">Secure Software Development</a> &middot; Unit 4</div>
+
+          <div class="section-card">
+            <h2>Assignment: e-Portfolio Activity — Programming Language Concepts</h2>
+            <p class="unit-meta">Module: Secure Software Development – MSc Computer Science | Topics: Recursion, Regular Expressions and Application Security | Language: Python</p>
+
+            <h3>1. Introduction</h3>
+            <p>This activity explores two important programming language concepts: recursion and regular expressions (regex).</p>
+            <p>The first exercise investigates recursion through the classic Towers of Hanoi problem. It demonstrates how a complex problem can be divided into smaller problems using recursive function calls, while also highlighting computational complexity and potential security implications.</p>
+            <p>The second exercise focuses on regular expressions through the implementation of a UK postcode validator. It explores how regex can be used to validate structured input and examines the security risks associated with poorly designed expressions, particularly Regular Expression Denial of Service (ReDoS).</p>
+            <p>The activity concludes with an analysis of how these programming concepts relate to application and system security.</p>
+
+            <h3>2. Exercise 1 – Recursion: Towers of Hanoi</h3>
+
+            <h4>2.1 Understanding Recursion</h4>
+            <p>Recursion is a programming technique in which a function calls itself to solve a problem. Instead of solving the entire problem in one operation, the function breaks it down into smaller instances of the same problem.</p>
+            <p>A recursive function generally consists of two important components:</p>
+            <ul>
+              <li><strong>Base case:</strong> Defines the condition under which recursion stops.</li>
+              <li><strong>Recursive case:</strong> Calls the function again with a smaller or simpler input.</li>
+            </ul>
+            <p>The Towers of Hanoi is a classic example of recursion. It involves three pegs and a number of disks of different sizes.</p>
+            <p>The objective is to move all disks from the source peg to the destination peg while following three rules:</p>
+            <ol>
+              <li>Only one disk can be moved at a time.</li>
+              <li>Only the uppermost disk of a peg can be moved.</li>
+              <li>A larger disk cannot be placed on top of a smaller disk.</li>
+            </ol>
+
+            <h4>Recursive approach</h4>
+            <p>The problem can be divided into three steps:</p>
+            <ol>
+              <li>Move the top \(n-1\) disks from the source peg to the auxiliary peg.</li>
+              <li>Move the largest remaining disk from the source peg to the destination peg.</li>
+              <li>Move the \(n-1\) disks from the auxiliary peg to the destination peg.</li>
+            </ol>
+            <p>The recurrence relation is:</p>
+            <p>\(T(n)=2T(n-1)+1\)</p>
+            <p>Solving this recurrence gives:</p>
+            <p>\(\boxed{T(n)=2^n-1}\)</p>
+            <p>This means that the minimum number of moves grows exponentially with the number of disks.</p>
+
+            <h4>2.2 Python Implementation</h4>
+            <p>The following implementation uses a recursive function to solve the Towers of Hanoi problem. It asks the user for the number of disks, executes the moves and displays the total number of moves.</p>
+            <pre><code>def towers_of_hanoi(n, source, destination, auxiliary):
+    """
+    Recursively solves the Towers of Hanoi problem.
+    Returns the total number of moves performed.
+    """
+
+    # Base case
+    if n == 0:
+        return 0
+
+    # Step 1: Move n-1 disks to the auxiliary peg
+    moves = towers_of_hanoi(
+        n - 1, source, auxiliary, destination
+    )
+
+    # Step 2: Move the largest remaining disk
+    print(f"Move disk {n} from {source} to {destination}")
+    moves += 1
+
+    # Step 3: Move n-1 disks to the destination peg
+    moves += towers_of_hanoi(
+        n - 1, auxiliary, destination, source
+    )
+
+    return moves
+
+
+def main():
+    try:
+        disks = int(input("Enter the number of disks: "))
+
+        if disks < 1:
+            print("Please enter a positive integer.")
+            return
+
+        print("\nStarting Towers of Hanoi...\n")
+
+        total_moves = towers_of_hanoi(
+            disks, "A", "C", "B"
+        )
+
+        print("\nCompleted!")
+        print(f"Number of disks: {disks}")
+        print(f"Total moves executed: {total_moves}")
+
+    except ValueError:
+        print("Invalid input. Please enter an integer.")
+
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+
+            <h4>Explanation</h4>
+            <p>The <code>towers_of_hanoi()</code> function receives four parameters:</p>
+            <ul>
+              <li><code>n</code>: Number of disks remaining.</li>
+              <li><code>source</code>: Original peg.</li>
+              <li><code>destination</code>: Target peg.</li>
+              <li><code>auxiliary</code>: Temporary peg.</li>
+            </ul>
+            <p>The base case is <code>n == 0</code>, which stops further recursive calls.</p>
+            <p>Otherwise, the function calls itself twice to move the smaller disks before and after moving the largest remaining disk.</p>
+            <p>The function returns the total number of moves, avoiding the need for a global counter.</p>
+
+            <h4>2.3 Execution and Testing</h4>
+            <p>For three disks, the expected output is:</p>
+            <pre><code>Enter the number of disks: 3
+
+Starting Towers of Hanoi...
+
+Move disk 1 from A to C
+Move disk 2 from A to B
+Move disk 1 from C to B
+Move disk 3 from A to C
+Move disk 1 from B to A
+Move disk 2 from B to C
+Move disk 1 from A to C
+
+Completed!
+Number of disks: 3
+Total moves executed: 7
+</code></pre>
+
+            <h4>Theoretical move calculations</h4>
+            <p>The number of moves required for different disk counts is:</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Disks</th>
+                  <th>Required moves</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>1</td></tr>
+                <tr><td>2</td><td>3</td></tr>
+                <tr><td>3</td><td>7</td></tr>
+                <tr><td>4</td><td>15</td></tr>
+                <tr><td>5</td><td>31</td></tr>
+                <tr><td>10</td><td>1,023</td></tr>
+                <tr><td>20</td><td>1,048,575</td></tr>
+                <tr><td>30</td><td>1,073,741,823</td></tr>
+                <tr><td>64</td><td>18,446,744,073,709,551,615</td></tr>
+              </tbody>
+            </table>
+            <p>The results demonstrate that increasing the number of disks significantly increases the computational work required.</p>
+
+            <h4>2.4 What Is the Theoretical Maximum Number of Disks?</h4>
+            <p>There is no single universal maximum number of disks that Python can process. The practical limit depends on the interpreter configuration and available system resources.</p>
+            <p>Two main limitations must be considered.</p>
+
+            <h5>1. Python recursion limit</h5>
+            <p>Python imposes a maximum recursion depth to protect the interpreter's call stack.</p>
+            <p>The current recursion limit can be inspected using:</p>
+            <pre><code>import sys
+
+print(sys.getrecursionlimit())
+</code></pre>
+            <p>A typical Python installation has a default recursion limit of approximately 1,000 calls.</p>
+            <p>Since each recursive call reduces the number of disks by one, attempting to process too many disks can result in a <code>RecursionError</code>.</p>
+            <p>The exact maximum number of disks is lower than or equal to the available recursion depth, depending on other function calls already occupying the stack.</p>
+
+            <h5>2. Computational resources</h5>
+            <p>Even if the recursion limit is increased, the number of moves becomes impractical very quickly.</p>
+            <p>For example, 30 disks require more than one billion moves. Printing each move would generate an enormous quantity of output and consume considerable processing time.</p>
+            <p>Therefore, the theoretical number of disks is not the same as the practical number that a computer can process efficiently.</p>
+
+            <h4>2.5 What Limits the Number of Iterations and What Are the Security Implications?</h4>
+            <p>The number of operations is determined by the recursive structure:</p>
+            <p>\(T(n)=2T(n-1)+1\)</p>
+            <p>Which produces:</p>
+            <p>\(T(n)=2^n-1\)</p>
+            <p>The main limitations include:</p>
+            <ul>
+              <li><strong>Recursion depth:</strong> Excessive nested function calls can cause a <code>RecursionError</code>.</li>
+              <li><strong>CPU consumption:</strong> Exponentially increasing operations can consume significant processing resources.</li>
+              <li><strong>Memory consumption:</strong> Every active recursive call requires memory for its execution context.</li>
+              <li><strong>Output consumption:</strong> Printing every operation can generate excessive output and potentially exhaust storage resources.</li>
+            </ul>
+
+            <h5>Security implications</h5>
+            <p>This problem demonstrates how a program can be logically correct but still introduce security vulnerabilities through uncontrolled resource consumption.</p>
+            <p>If an application accepts an unrestricted number of disks from an external user, an attacker could submit an extremely large value to trigger computationally expensive operations.</p>
+            <p>If such requests are repeatedly submitted, the application could become unresponsive to legitimate users.</p>
+            <p>This is an example of a potential Denial of Service (DoS) vulnerability.</p>
+            <p>Possible mitigation strategies include:</p>
+            <ul>
+              <li>Validate and restrict user input.</li>
+              <li>Establish reasonable limits on computationally expensive operations.</li>
+              <li>Apply execution timeouts where appropriate.</li>
+              <li>Monitor CPU and memory consumption.</li>
+              <li>Avoid generating unnecessary output.</li>
+              <li>Consider iterative implementations when recursion is not necessary.</li>
+            </ul>
+            <p>The main lesson is that developers must consider resource consumption when designing algorithms that process externally supplied input.</p>
+
+            <h3>3. Exercise 2 – Regular Expressions: UK Postcode Validation</h3>
+
+            <h4>3.1 Understanding Regular Expressions</h4>
+            <p>Regular expressions are patterns used to identify, search and validate strings.</p>
+            <p>They are commonly used for input validation, data extraction, text processing and security-related filtering.</p>
+            <p>For this exercise, the objective is to implement a Python program that checks whether a string follows the UK postcode format.</p>
+            <p>An important distinction is that a regex can verify whether a postcode follows the expected structure, but it cannot independently guarantee that the postcode actually exists.</p>
+
+            <h4>UK postcode structure</h4>
+            <p>A UK postcode consists of two main parts:</p>
+            <ul>
+              <li><strong>Outward code:</strong> Identifies the postcode area and district.</li>
+              <li><strong>Inward code:</strong> Identifies a more specific delivery location.</li>
+            </ul>
+            <p>Examples of valid postcode structures include:</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Format</th>
+                  <th>Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>A9 9AA</td><td>M1 1AA</td></tr>
+                <tr><td>A99 9AA</td><td>M60 1NW</td></tr>
+                <tr><td>AA9 9AA</td><td>CR2 6XH</td></tr>
+                <tr><td>AA99 9AA</td><td>DN55 1PT</td></tr>
+                <tr><td>A9A 9AA</td><td>W1A 1HQ</td></tr>
+                <tr><td>AA9A 9AA</td><td>EC1A 1BB</td></tr>
+              </tbody>
+            </table>
+            <p>The final two letters of the inward code cannot contain C, I, K, M, O or V.</p>
+            <p>This explains why <code>ST7 9HV</code> is invalid: its final character is V.</p>
+
+            <h4>3.2 Python Implementation</h4>
+            <p>The following implementation uses a regular expression to validate the permitted UK postcode structures, including the special postcode <code>GIR 0AA</code>.</p>
+            <pre><code>import re
+
+# UK postcode format, including the special GIR 0AA postcode.
+POSTCODE_PATTERN = re.compile(
+    r"^(?:GIR 0AA|"
+    r"(?:"
+    r"[A-PR-UWYZ][0-9]{1,2}|"
+    r"[A-PR-UWYZ][A-HK-Y][0-9]{1,2}|"
+    r"[A-PR-UWYZ][0-9][A-HJKSTUW]|"
+    r"[A-PR-UWYZ][A-HK-Y][0-9][ABEHMNPRV-Y]"
+    r") "
+    r"[0-9][ABD-HJLNP-UW-Z]{2}"
+    r")$"
+)
+
+
+def validate_postcode(postcode):
+
+    # Normalise input
+    postcode = postcode.strip().upper()
+
+    # Reject excessively long input
+    if len(postcode) > 8:
+        return False
+
+    # Match the entire string against the pattern
+    return POSTCODE_PATTERN.fullmatch(postcode) is not None
+
+
+def main():
+
+    postcode = input("Enter a UK postcode: ")
+
+    if validate_postcode(postcode):
+        print(f"{postcode.upper()} follows the UK postcode format.")
+    else:
+        print(f"{postcode} is not a valid UK postcode format.")
+
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+
+            <h4>Explanation of the regex</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Regex component</th>
+                  <th>Explanation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><code>^</code></td><td>Beginning of the string</td></tr>
+                <tr><td><code>GIR 0AA</code></td><td>Special postcode exception</td></tr>
+                <tr><td><code>[A-PR-UWYZ]</code></td><td>Permitted first letter of the outward code</td></tr>
+                <tr><td><code>[0-9]{1,2}</code></td><td>One or two digits</td></tr>
+                <tr><td><code>[A-HK-Y]</code></td><td>Permitted second letter in a two-letter area</td></tr>
+                <tr><td><code>[A-HJKSTUW]</code></td><td>Permitted letter in the special outward-code format</td></tr>
+                <tr><td><code>[ABEHMNPRV-Y]</code></td><td>Permitted final letter of certain outward codes</td></tr>
+                <tr><td>Space</td><td>Separates outward and inward codes</td></tr>
+                <tr><td><code>[0-9]</code></td><td>First character of the inward code</td></tr>
+                <tr><td><code>[ABD-HJLNP-UW-Z]{2}</code></td><td>Two permitted final letters</td></tr>
+                <tr><td><code>$</code></td><td>End of the string</td></tr>
+              </tbody>
+            </table>
+            <p>The expression uses explicit character ranges to restrict which characters are accepted.</p>
+
+            <h4>3.3 Testing the Implementation</h4>
+            <p>The following test cases cover the six examples provided in the assignment and additional invalid inputs.</p>
+            <pre><code>test_cases = [
+    ("M1 1AA", True),
+    ("M60 1NW", True),
+    ("CR2 6XH", True),
+    ("DN55 1PT", True),
+    ("W1A 1HQ", True),
+    ("EC1A 1BB", True),
+    ("ST7 9HV", False),
+    ("INVALID", False),
+    ("12345", False),
+    ("AA1 1CI", False),
+    ("", False),
+]
+
+print("POSTCODE VALIDATION RESULTS")
+print("-" * 45)
+
+for postcode, expected in test_cases:
+
+    result = validate_postcode(postcode)
+
+    status = "PASS" if result == expected else "FAIL"
+
+    print(
+        f"{postcode!r:15} "
+        f"Expected: {expected!s:5} "
+        f"Actual: {result!s:5} "
+        f"{status}"
+    )
+</code></pre>
+            <p><strong>Expected result:</strong> All eleven test cases should pass.</p>
+
+            <h4>Limitations</h4>
+            <p>This implementation validates the postcode format, not the existence of a postcode.</p>
+            <p>A postcode can match the regular expression while not being officially assigned or currently active.</p>
+            <p>For production applications, a postcode validation service or authoritative postcode database can provide an additional verification layer.</p>
+
+            <h3>4. Evil Regex and Application Security</h3>
+
+            <h4>4.1 What Is Evil Regex?</h4>
+            <p>Evil Regex refers to a regular expression that can cause extremely inefficient processing when presented with specially crafted input.</p>
+            <p>This is commonly associated with an attack known as <strong>Regular Expression Denial of Service (ReDoS)</strong>.</p>
+            <p>Some regex engines use a backtracking mechanism. When a match fails, the engine may revisit previous positions and attempt alternative matching paths.</p>
+            <p>Certain expressions can create an enormous number of possible paths, causing processing time to increase exponentially with input length.</p>
+            <p>Consider the following example:</p>
+            <pre><code>import re
+
+pattern = re.compile(r"^(a+)+$")
+
+print(pattern.match("aaaaaaaaX"))
+</code></pre>
+            <p>The expression contains nested repetition.</p>
+            <p>When the input contains many <code>a</code> characters followed by an invalid character such as <code>X</code>, the regex engine may explore many different ways of dividing the repeated characters into groups before determining that the match fails.</p>
+            <p>An attacker could exploit this behaviour by submitting specially constructed input to a vulnerable application.</p>
+            <p>For example:</p>
+            <ol>
+              <li>An application uses a vulnerable regex to validate usernames.</li>
+              <li>An attacker discovers the regex pattern.</li>
+              <li>The attacker submits carefully constructed input.</li>
+              <li>The regex engine performs an excessive number of matching operations.</li>
+              <li>The application becomes slow or unresponsive.</li>
+            </ol>
+            <p>This can prevent legitimate users from accessing the service.</p>
+
+            <h4>4.2 What Are the Common Problems Associated with Regex and How Can They Be Mitigated?</h4>
+            <p>There are several problems developers need to consider when implementing regular expressions.</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Problem</th>
+                  <th>Explanation</th>
+                  <th>Mitigation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>ReDoS attacks</td>
+                  <td>Certain patterns cause excessive backtracking and CPU consumption.</td>
+                  <td>Avoid nested quantifiers and overlapping alternatives. Use execution limits where available.</td>
+                </tr>
+                <tr>
+                  <td>Complex expressions</td>
+                  <td>Long and complicated patterns are difficult to understand and maintain.</td>
+                  <td>Keep expressions simple, document them and split complex validation into smaller steps.</td>
+                </tr>
+                <tr>
+                  <td>Incorrect validation</td>
+                  <td>A regex might accept invalid data or reject valid data.</td>
+                  <td>Test against valid and invalid examples and maintain a comprehensive test suite.</td>
+                </tr>
+                <tr>
+                  <td>Regex injection</td>
+                  <td>Untrusted input inserted into a regex can change its behaviour.</td>
+                  <td>Escape user-supplied literals and avoid constructing regex patterns from untrusted input.</td>
+                </tr>
+                <tr>
+                  <td>Excessively long input</td>
+                  <td>Large inputs can increase processing time and memory consumption.</td>
+                  <td>Apply input length restrictions before regex evaluation.</td>
+                </tr>
+                <tr>
+                  <td>Engine differences</td>
+                  <td>Different regex engines can interpret certain features differently.</td>
+                  <td>Use well-supported syntax and test using the actual target engine.</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h4>Mitigation strategies</h4>
+            <p>A secure implementation should follow several principles:</p>
+            <ul>
+              <li>Prefer simple and predictable expressions.</li>
+              <li>Avoid nested repetition such as <code>(a+)+</code>.</li>
+              <li>Avoid overlapping alternatives that create excessive backtracking.</li>
+              <li>Limit the length of user-provided input.</li>
+              <li>Use regex timeout functionality where the language or library supports it.</li>
+              <li>Never assume client-side validation is sufficient; repeat validation on the server.</li>
+              <li>Use automated testing, including malicious and unexpected inputs.</li>
+            </ul>
+            <p>For applications processing untrusted input at scale, developers can also consider regex engines with guaranteed linear-time matching, such as Google's RE2, rather than relying on a backtracking engine.</p>
+            <p>In the postcode implementation, the risk is reduced through a predefined expression, explicit character ranges, a maximum input length and full-string matching.</p>
+            <p>The pattern does not contain nested quantifiers or ambiguous repeated alternatives.</p>
+
+            <h4>4.3 How and Why Could Regex Be Used as Part of a Security Solution?</h4>
+            <p>Regular expressions can contribute to application security by helping developers identify, validate and filter input.</p>
+            <p>There are several useful applications.</p>
+
+            <h5>1. Input validation</h5>
+            <p>Regex can verify that data follows an expected format before an application processes it.</p>
+            <p>Examples include:</p>
+            <ul>
+              <li>Email address format checking.</li>
+              <li>Postcode validation.</li>
+              <li>Username restrictions.</li>
+              <li>Password policy checks.</li>
+              <li>Identification number formatting.</li>
+            </ul>
+            <p>This helps reduce malformed or unexpected input entering an application.</p>
+
+            <h5>2. Detecting suspicious activity</h5>
+            <p>Regex can be used to search application logs for suspicious patterns.</p>
+            <p>For example, a security monitoring system could look for repeated SQL injection indicators, unexpected request patterns or suspicious authentication attempts.</p>
+
+            <h5>3. Security filtering</h5>
+            <p>Regex can help identify potentially dangerous input, including suspicious script fragments or known attack signatures.</p>
+            <p>However, regex-based filtering should not be considered a complete defence against attacks such as SQL injection or Cross-Site Scripting (XSS).</p>
+            <p>Dedicated protections should be used, such as:</p>
+            <ul>
+              <li>Parameterised SQL queries.</li>
+              <li>Context-aware output encoding.</li>
+              <li>Established security libraries.</li>
+            </ul>
+
+            <h5>4. Enforcing security policies</h5>
+            <p>Regex can help enforce consistent input requirements, such as:</p>
+            <ul>
+              <li>Restricting usernames to permitted characters.</li>
+              <li>Enforcing password complexity requirements.</li>
+              <li>Checking that identifiers follow an expected structure.</li>
+              <li>Validating file naming conventions.</li>
+            </ul>
+
+            <h5>Critical analysis</h5>
+            <p>Although regex can be useful as a security mechanism, it must be implemented carefully.</p>
+            <p>A poorly designed validation expression could itself introduce a vulnerability, particularly ReDoS.</p>
+            <p>Additionally, matching a string against a pattern does not necessarily establish that the data is safe.</p>
+            <p>For example, a postcode regex can establish that an input follows the expected postcode structure, but it cannot guarantee that the postcode exists.</p>
+            <p>Similarly, identifying a potentially malicious string does not necessarily mean that the application is protected against the underlying vulnerability.</p>
+            <p>Therefore, regex should be considered one component of a broader security strategy rather than a standalone security solution.</p>
+
+            <h3>5. Reflection and Learning Outcomes</h3>
+            <p>The two exercises demonstrate different aspects of programming language concepts and their relationship with software security.</p>
+            <p>The Towers of Hanoi exercise helped me understand how recursion can simplify problems by breaking them down into smaller versions of the same problem. However, it also demonstrated that recursive algorithms can introduce performance and resource limitations.</p>
+            <p>The exponential growth in the number of operations means that an algorithm can become impractical even when its implementation is logically correct.</p>
+            <p>The regular expression exercise demonstrated how patterns can be used to validate structured input. It also highlighted the importance of understanding how regex engines process expressions, particularly when dealing with untrusted input.</p>
+            <p>One important distinction I identified is that validating the structure of information does not necessarily establish its actual validity. For example, a postcode can match the expected format without corresponding to an existing address.</p>
+            <p>Overall, these activities demonstrated that programming language concepts should be evaluated not only in terms of functionality and correctness but also in terms of performance, reliability and security.</p>
+
+            <h3>6. References</h3>
+            <ul>
+              <li>Cormen, T.H. and Balkcom, D. (n.d.) <em>Towers of Hanoi</em>. Available at: <a href="https://www.khanacademy.org/computing/computer-science/algorithms/towers-of-hanoi" target="_blank" rel="noopener">https://www.khanacademy.org/computing/computer-science/algorithms/towers-of-hanoi</a> (Accessed: 10 November 2026).</li>
+              <li>Ideal Postcodes (2020) <em>UK Postcode Regex</em>. Available at: <a href="https://ideal-postcodes.co.uk/guides/postcode-validation" target="_blank" rel="noopener">https://ideal-postcodes.co.uk/guides/postcode-validation</a> (Accessed: 10 November 2026).</li>
+              <li>Jaiswal (2020) <em>Regular Expressions Tutorial</em>. Refer to the tutorial provided in the module reading list.</li>
+              <li>OWASP Foundation (n.d.) <em>Regular Expression Denial of Service (ReDoS)</em>. Available at: <a href="https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS" target="_blank" rel="noopener">https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS</a> (Accessed: 10 November 2026).</li>
+              <li>Weidman, A. (n.d.) <em>Regular Expression Denial of Service (ReDoS)</em>. Refer to the reading provided in the module reading list.</li>
+            </ul>
+
+            <hr>
+            <p><em>End of e-Portfolio Activity: Programming Language Concepts</em></p>
+          </div>
         </div>
       </section>
       <footer class="site-footer">
